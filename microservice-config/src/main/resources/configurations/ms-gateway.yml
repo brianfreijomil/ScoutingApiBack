@@ -1,0 +1,46 @@
+eureka:
+  client:
+    register-with-eureka: false
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ms-gateway
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/userDb
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: users
+          uri: http://localhost:8093
+          predicates:
+            - Path=/api/users/**
+        - id: calendar
+          uri: http://localhost:8091
+          predicates:
+            - Path=/api/calendar/**
+        - id: players
+          uri: http://localhost:8090
+          predicates:
+            - Path=/api/players/**
+        - id: teams
+          uri: http://localhost:9090
+          predicates:
+            - Path=/api/teams/**
+        - id: recruitment-stats
+          uri: http://localhost:8092
+          predicates:
+            - Path=/api/recruitment_stats/**

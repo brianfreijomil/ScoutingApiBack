@@ -1,0 +1,14 @@
+
+spring:
+  application:
+    name: ms-gateway
+  config:
+    import: optional:configserver:http://localhost:8889
+  security:
+
+security:
+  jwt:
+    key:
+      private: 352d429ecd123e9a1782585c9a888772cb10bd71fd1d77bdcee05c7e0bad2907
+    user:
+      generator: AUTH0JWT-BACKEND
