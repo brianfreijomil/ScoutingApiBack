@@ -33,7 +33,7 @@ public class UserController {
         return this.userService.getById(id);
     }
 
-    @GetMapping("/login")
+    @PostMapping("/log-in")
     public UserResponseDTO startSession(@RequestBody @Valid LoginDTO loginDTO) {
         return this.userService.getByCredentials(loginDTO);
     }

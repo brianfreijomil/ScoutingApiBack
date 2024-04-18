@@ -34,14 +34,43 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(http -> {
-                    // EndPoints publicos
-                    http.requestMatchers(HttpMethod.POST, "/users/**").permitAll();
+                    // EndPoints publics
+                    http.requestMatchers(HttpMethod.POST, "/api/users/log-in").permitAll();
 
-                    // EndPoints Privados
-                    http.requestMatchers(HttpMethod.GET, "/method/get").hasAuthority("READ");
-                    http.requestMatchers(HttpMethod.POST, "/method/post").hasAuthority("CREATE");
-                    http.requestMatchers(HttpMethod.DELETE, "/method/delete").hasAuthority("DELETE");
-                    http.requestMatchers(HttpMethod.PUT, "/method/put").hasAuthority("UPDATE");
+                    // EndPoints user privates
+                    http.requestMatchers(HttpMethod.GET, "/api/users").hasRole("DVELOPER");
+                    http.requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("ADMIN","DVELOPER");
+                    http.requestMatchers(HttpMethod.POST, "/api/users/**").hasAnyRole("ADMIN","DVELOPER");
+                    http.requestMatchers(HttpMethod.POST, "/api/users").hasAnyRole("ADMIN","DVELOPER");
+                    http.requestMatchers(HttpMethod.DELETE, "/api/users/**").hasAnyRole("ADMIN","DEVELOPER");
+                    http.requestMatchers(HttpMethod.PUT, "/api/method/**").hasAnyRole("ADMIN","DEVELOPER");
+                    http.requestMatchers(HttpMethod.PATCH, "/api/users/**").hasAnyRole("ADMIN","DEVELOPER");
+                    http.requestMatchers(HttpMethod.PATCH, "/api/users/subscription/**").hasRole("DVELOPER");
+
+                    //Endpoints player privates
+                    http.requestMatchers(HttpMethod.GET, "/api/players/**").hasAnyRole("ADMIN","USER","DEVELOPER");
+                    http.requestMatchers(HttpMethod.POST, "/api/players").hasAnyRole("ADMIN","USER","DEVELOPER");
+                    http.requestMatchers(HttpMethod.POST, "/api/players/scouter").hasAnyRole("ADMIN","DEVELOPER");
+                    http.requestMatchers(HttpMethod.DELETE, "/api/players/**").hasAnyRole("ADMIN","DEVELOPER");
+                    http.requestMatchers(HttpMethod.PUT, "/api/players/**").hasRole("ADMIN");
+                    http.requestMatchers(HttpMethod.DELETE, "/api/players/scouter").hasAnyRole("ADMIN","DEVELOPER");
+                    http.requestMatchers(HttpMethod.PUT, "/api/players/scouter").hasAnyRole("ADMIN","DEVELOPER");
+                    http.requestMatchers(HttpMethod.PATCH, "/api/players/**").hasRole("ADMIN");
+
+                    //Endpoints team privates
+                    http.requestMatchers(HttpMethod.GET, "/api/teams").hasRole("DVELOPER");
+                    http.requestMatchers(HttpMethod.GET, "/api/teams/**").hasRole("DVELOPER");
+                    http.requestMatchers(HttpMethod.POST, "/api/teams").hasRole("DVELOPER");
+                    http.requestMatchers(HttpMethod.PUT, "/api/teams/**").hasRole("DVELOPER");
+                    http.requestMatchers(HttpMethod.DELETE, "/api/teams/**").hasRole("DVELOPER");
+                    http.requestMatchers(HttpMethod.PATCH, "/api/teams/**").hasRole("DVELOPER");
+
+                    //Endpoints calendar privates
+                    http.requestMatchers(HttpMethod.GET, "/api/calendar/events").hasAnyRole("DVELOPER","ADMIN");
+                    http.requestMatchers(HttpMethod.GET, "/api/calendar/events/**").hasAnyRole("DVELOPER","ADMIN");
+                    http.requestMatchers(HttpMethod.POST, "/api/calendar/**").hasAnyRole("DVELOPER","ADMIN");
+                    http.requestMatchers(HttpMethod.PUT, "/api/calendar/**").hasAnyRole("DVELOPER","ADMIN");
+                    http.requestMatchers(HttpMethod.DELETE, "/api/calendar/**").hasAnyRole("DVELOPER","ADMIN");
 
                     http.anyRequest().denyAll();
                 })

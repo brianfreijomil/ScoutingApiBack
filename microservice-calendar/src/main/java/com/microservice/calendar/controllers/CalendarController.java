@@ -1,11 +1,15 @@
 package com.microservice.calendar.controllers;
 
+import com.microservice.calendar.dtos.events.request.EventCalendarRequestDTO;
+import com.microservice.calendar.dtos.events.response.EventCalendarResponseDTO;
 import com.microservice.calendar.dtos.scouter.request.ScouterRequestDTO;
 import com.microservice.calendar.services.interfaces.ICalendarService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/calendar")
@@ -16,17 +20,30 @@ public class CalendarController {
 
     /* ----- Events Context ----- */
 
-    //get events
+    @GetMapping("/events/{teamid}")
+    public List<EventCalendarResponseDTO> getAllEvents(@PathVariable Long teamId) {
+        return this.calendarService.getAllbyTeamId(teamId);
+    }
 
-    //get Event
+    @GetMapping("/events/{eventId}")
+    public EventCalendarResponseDTO getEventById(@PathVariable Long eventId) {
+        return this.calendarService.getById(eventId);
+    }
 
-    //create event
+    @PostMapping("/events")
+    public ResponseEntity<?> createEvent(@RequestBody @Valid EventCalendarRequestDTO requestDTO) {
+        return this.calendarService.createEvent(requestDTO);
+    }
 
-    //update event
+    @PutMapping("/events/{eventId}")
+    public ResponseEntity<?> updateEvent(@RequestBody @Valid EventCalendarRequestDTO requestDTO, @PathVariable Long eventId) {
+        return this.calendarService.updateEvent(requestDTO,eventId);
+    }
 
-    //delete event
-
-
+    @DeleteMapping("/events/{eventId}")
+    public ResponseEntity<?> deleteEvent(@PathVariable Long eventId) {
+        return this.calendarService.deleteEvent(eventId);
+    }
 
     /* ----- Scouter Context ----- */
 
