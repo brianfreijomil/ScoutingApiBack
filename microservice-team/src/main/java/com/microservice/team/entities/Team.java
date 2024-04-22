@@ -25,13 +25,13 @@ public class Team {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "contact_number")
     private String contactNumber;
 
     @Column(nullable = false)
     private Boolean subscribed;
 
-    @Column(nullable = false)
+    @Column(nullable = false,name = "date_of_expired")
     private Date dateOfExpired;
 
     public Team(TeamRequestDTO requestDTO) {

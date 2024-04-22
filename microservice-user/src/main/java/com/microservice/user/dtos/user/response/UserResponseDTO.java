@@ -23,8 +23,8 @@ public class UserResponseDTO {
         this.username = user.getUsername();
         this.surname = user.getSurname();
         this.name = user.getName();
-        this.roleDescription = user.getRole().getType();
-        this.status = user.getStatus();
+        this.roleDescription = user.getRole().getRoleName();
+        this.status = user.isEnabled();
         this.teamId = getTeamId();
     }
 

@@ -28,8 +28,8 @@ public class UserRequestDTO {
     @NotNull(message = "roleDescription cannot be null")
     @NotEmpty(message = "roleDescription cannot be empty")
     private String roleDescription;
-    @NotNull(message = "status cannot be null")
-    private Boolean status;
+    @NotNull(message = "enabled cannot be null")
+    private Boolean enabled;
     @NotNull(message = "teamId cannot be null")
     private Long teamId;
 

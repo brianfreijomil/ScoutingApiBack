@@ -15,6 +15,6 @@ public class RoleResponseDTO {
 
     public RoleResponseDTO(Role role) {
         this.id = role.getId();
-        this.type = role.getType();
+        this.type = role.getRoleName();
     }
 }

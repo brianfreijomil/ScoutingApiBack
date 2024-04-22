@@ -38,16 +38,16 @@ public class Player {
     @Column
     private Double height;
 
-    @Column
+    @Column(name = "skill_leg")
     private String skillLeg;
 
-    @Column
+    @Column(name = "url_image")
     private String urlImage;
 
-    @Column(nullable = false)
+    @Column(nullable = false,name = "first_position")
     private String firstPosition;
 
-    @Column
+    @Column(name = "second_position")
     private String secondPosition;
 
     @Column
@@ -77,10 +77,10 @@ public class Player {
     @Column(nullable = false) //fichado=1/obsrvado=0
     private Boolean status;
 
-    @Column
+    @Column(name = "video_links")
     private List<String> videoLinks;
 
-    @Column
+    @Column(name = "team_id")
     private Long teamId;
 
     public Player(PlayerRequestDTO requestDTO) {

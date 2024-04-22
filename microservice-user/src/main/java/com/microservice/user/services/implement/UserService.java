@@ -110,7 +110,7 @@ public class UserService implements IUserService {
                         userExisting.get().setName(user.getName());
                         userExisting.get().setPassword(user.getPassword());
                         userExisting.get().setRole(role);
-                        userExisting.get().setStatus(user.getStatus());
+                        userExisting.get().setEnabled(user.getEnabled());
                         //Id, subscriptionStatus and teamId cannot be edited
 
                         this.userRepository.save(userExisting.get());
@@ -129,11 +129,11 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> updateStatus(Boolean status, Long id) {
+    public ResponseEntity<?> updateStatus(Boolean isEnabled, Long id) {
         Optional<User> userExisting = this.userRepository.findById(id);
         if(!userExisting.isEmpty()) {
             try {
-                userExisting.get().setStatus(status);
+                userExisting.get().setEnabled(isEnabled);
 
                 this.userRepository.save(userExisting.get());
                 return new ResponseEntity<>(true,HttpStatus.ACCEPTED);

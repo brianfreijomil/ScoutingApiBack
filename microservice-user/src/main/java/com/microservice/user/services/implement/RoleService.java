@@ -58,16 +58,16 @@ public class RoleService implements IRoleService {
     @Override
     @Transactional
     public ResponseEntity<?> create(RoleRequestDTO role) {
-        if(this.roleRepository.findByType(role.getType()) != null) {
+        if(this.roleRepository.findByType(role.getRoleName()) != null) {
             try {
                 this.roleRepository.save(new Role(role));
                 return new ResponseEntity<>(true, HttpStatus.CREATED);
             }
             catch (Exception ex) {
-                throw new ConflictPersistException("create","Role","type", role.getType(), ex.getMessage());
+                throw new ConflictPersistException("create","Role","role_name", role.getRoleName(), ex.getMessage());
             }
         }
-        throw new ConflictExistException("Role","type", role.getType());
+        throw new ConflictExistException("Role","role_name", role.getRoleName());
     }
 
     @Override
@@ -76,7 +76,7 @@ public class RoleService implements IRoleService {
         Optional<Role> roleExisting = this.roleRepository.findById(id);
         if(!roleExisting.isEmpty()) {
             try {
-                roleExisting.get().setType(role.getType());
+                roleExisting.get().setRoleName(role.getRoleName());
                 //the id cannot be edited
                 this.roleRepository.save(roleExisting.get());
                 return new ResponseEntity<>(true,HttpStatus.ACCEPTED);

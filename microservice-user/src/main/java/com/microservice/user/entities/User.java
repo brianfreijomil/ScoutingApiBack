@@ -32,15 +32,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    //@ManyToOne
-    //private Role role;
-
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
+    @ManyToOne
+    private Role role;
 
     @Column(name = "is_enabled")
     private boolean isEnabled;
@@ -62,7 +55,11 @@ public class User {
         this.surname = requestDTO.getSurname();
         this.name = requestDTO.getName();
         this.password = requestDTO.getPassword();
-        //falta role y los status...
+        this.role = role;
+        this.isEnabled = true;
+        this.accountNoExpired = true;
+        this.accountNoLocked = true;
+        this.credentialNoExpired = true;
         this.subscriptionStatus = true;
         this.teamId = requestDTO.getTeamId();
     }

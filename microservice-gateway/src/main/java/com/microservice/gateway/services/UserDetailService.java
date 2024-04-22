@@ -1,21 +1,10 @@
 package com.microservice.gateway.services;
 
-import com.microservice.gateway.client.UserClient;
 import com.microservice.gateway.dtos.AuthLoginRequestDTO;
 import com.microservice.gateway.dtos.UserDTO;
 import com.microservice.gateway.http.AuthResponse;
 import com.microservice.gateway.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
-public class UserDetailService implements UserDetailsService {
+public class UserDetailService /*implements UserDetailsService*/ {
 
+    /*
     @Autowired
     private JwtUtils jwtUtils;
 
@@ -39,6 +28,8 @@ public class UserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) {
         return null;
     }
+
+     */
 
     /*
     public AuthResponse createUser(AuthCreateUserRequest createRoleRequest) {
@@ -72,7 +63,7 @@ public class UserDetailService implements UserDetailsService {
         return authResponse;
     }
     */
-
+/*
     public AuthResponse loginUser(AuthLoginRequestDTO authLoginRequest) {
 
         //obtengo UserDetails por credenciales
@@ -109,6 +100,7 @@ public class UserDetailService implements UserDetailsService {
 
         return authResponse;
     }
+    */
 
     //Autentico usuario por credenciales
     /*
@@ -134,6 +126,7 @@ public class UserDetailService implements UserDetailsService {
 
      */
 
+    /*
     public UserDetails getUserDetailsByCredentials(AuthLoginRequestDTO authLoginRequestDTO) {
 
         //solicito usuario por credenciales al user-microservice
@@ -158,4 +151,6 @@ public class UserDetailService implements UserDetailsService {
                 authorityList
         );
     }
+
+     */
 }
