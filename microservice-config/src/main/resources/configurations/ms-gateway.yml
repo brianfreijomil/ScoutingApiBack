@@ -28,6 +28,7 @@ spring:
           uri: http://localhost:8093
           predicates:
             - Path=/api/users/**
+            - Path=/api/roles/**
         - id: calendar
           uri: http://localhost:8091
           predicates:
@@ -36,6 +37,8 @@ spring:
           uri: http://localhost:8090
           predicates:
             - Path=/api/players/**
+            - Path=/api/stats/**
+            - Path=/api/clinic_history/**
         - id: teams
           uri: http://localhost:9090
           predicates:

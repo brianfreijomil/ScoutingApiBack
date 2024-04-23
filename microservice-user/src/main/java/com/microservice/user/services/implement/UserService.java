@@ -1,5 +1,6 @@
 package com.microservice.user.services.implement;
 
+import com.microservice.user.dtos.ScouterDTO;
 import com.microservice.user.dtos.user.request.LoginDTO;
 import com.microservice.user.dtos.user.request.UserRequestDTO;
 import com.microservice.user.dtos.user.response.UserResponseDTO;
@@ -11,9 +12,11 @@ import com.microservice.user.exceptions.NotFoundException;
 import com.microservice.user.repositories.RoleRepository;
 import com.microservice.user.repositories.UserRepository;
 import com.microservice.user.services.interfaces.IUserService;
+import com.microservice.user.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +31,8 @@ public class UserService implements IUserService {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private KafkaTemplate<String,String> kafkaTemplate;
 
     @Override
     @Transactional(readOnly = true)
@@ -71,11 +76,17 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public ResponseEntity<?> create(UserRequestDTO user) {
-        if(this.userRepository.findByUsername(user.getUsername()) != null) {
+        if(this.userRepository.findByUsername(user.getUsername()) == null) {
             try {
                 Role role = this.roleRepository.findByType(user.getRoleDescription());
                 if(role != null) {
-                    this.userRepository.save(new User(user,role));
+                    User userCreated = this.userRepository.save(new User(user,role));
+                    //Debo avisarle al microservicio Player que debe crear un nuevo Scouter con los datos del nuevo Usuario
+                    this.kafkaTemplate.send("first-topic-scouting-app", JsonUtils.toJson(
+                            new ScouterDTO(userCreated.getId(), userCreated.getSurname(), userCreated.getName())
+                    ));
+
+                    //retorno estado de transaccion principal
                     return new ResponseEntity<>(true, HttpStatus.CREATED);
                 }
                 throw new NotFoundException("Role","type", user.getRoleDescription());
@@ -84,7 +95,7 @@ public class UserService implements IUserService {
                 throw new ConflictPersistException("create","User","username", user.getUsername(), ex.getMessage());
             }
         }
-        throw new NotFoundException("User","username",user.getSurname());
+        throw new ConflictExistException("User","username",user.getSurname());
     }
 
     @Override

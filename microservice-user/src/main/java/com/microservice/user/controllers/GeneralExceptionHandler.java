@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
 
-@RestControllerAdvice(basePackages = "com.microservice.player.controllers")
+@RestControllerAdvice(basePackages = "com.microservice.user.controllers")
 public class GeneralExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)

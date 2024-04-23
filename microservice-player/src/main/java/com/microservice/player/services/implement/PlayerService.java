@@ -19,6 +19,7 @@ import com.microservice.player.repositories.PlayerRepository;
 import com.microservice.player.repositories.ScouterRepository;
 import com.microservice.player.repositories.StatRepository;
 import com.microservice.player.services.interfaces.IPlayerService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -175,7 +176,7 @@ public class PlayerService implements IPlayerService {
 
     /* ----- Scouter Context ----- */
     @Transactional
-    public ResponseEntity<?> createScouter(ScouterRequestDTO scouter) {
+    public ResponseEntity<?> createScouter(@Valid ScouterRequestDTO scouter) {
         if(!this.scouterRepository.existsById(scouter.getId())) {
             try {
                 this.scouterRepository.save(new Scouter(scouter));
