@@ -1,22 +1,21 @@
 package com.microservice.user.services.implement;
 
-import com.microservice.user.dtos.ScouterDTO;
-import com.microservice.user.dtos.user.request.LoginDTO;
-import com.microservice.user.dtos.user.request.UserRequestDTO;
-import com.microservice.user.dtos.user.response.UserResponseDTO;
-import com.microservice.user.entities.Role;
-import com.microservice.user.entities.User;
+import com.microservice.user.model.dtos.ScouterDTO;
+import com.microservice.user.model.dtos.user.request.LoginDTO;
+import com.microservice.user.model.dtos.user.request.UserRequestDTO;
+import com.microservice.user.model.dtos.user.response.UserResponseDTO;
+import com.microservice.user.model.entities.Role;
+import com.microservice.user.model.entities.User;
 import com.microservice.user.exceptions.ConflictExistException;
 import com.microservice.user.exceptions.ConflictPersistException;
 import com.microservice.user.exceptions.NotFoundException;
+import com.microservice.user.model.events_kafka.UserEventKafka;
 import com.microservice.user.repositories.RoleRepository;
 import com.microservice.user.repositories.UserRepository;
 import com.microservice.user.services.interfaces.IUserService;
-import com.microservice.user.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +31,7 @@ public class UserService implements IUserService {
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
-    private KafkaTemplate<String,String> kafkaTemplate;
+    private KafkaEventsService kafkaService;
 
     @Override
     @Transactional(readOnly = true)
@@ -81,12 +80,16 @@ public class UserService implements IUserService {
                 Role role = this.roleRepository.findByType(user.getRoleDescription());
                 if(role != null) {
                     User userCreated = this.userRepository.save(new User(user,role));
-                    //Debo avisarle al microservicio Player que debe crear un nuevo Scouter con los datos del nuevo Usuario
-                    this.kafkaTemplate.send("first-topic-scouting-app", JsonUtils.toJson(
-                            new ScouterDTO(userCreated.getId(), userCreated.getSurname(), userCreated.getName())
-                    ));
 
-                    //retorno estado de transaccion principal
+                    //kafkaEvent--------------------------------------------------
+                    this.kafkaService.emitKafkaEvent(
+                            "user-to-scouter-topic",
+                            new UserEventKafka("create", new ScouterDTO(
+                                            userCreated.getId(),
+                                            userCreated.getSurname(),
+                                            userCreated.getName()))
+                    );
+                    //------------------------------------------------------------
                     return new ResponseEntity<>(true, HttpStatus.CREATED);
                 }
                 throw new NotFoundException("Role","type", user.getRoleDescription());
@@ -125,6 +128,16 @@ public class UserService implements IUserService {
                         //Id, subscriptionStatus and teamId cannot be edited
 
                         this.userRepository.save(userExisting.get());
+
+                        //kafkaEvent--------------------------------------------------
+                        this.kafkaService.emitKafkaEvent(
+                                "user-to-scouter-topic",
+                                new UserEventKafka("update", new ScouterDTO(
+                                        userExisting.get().getId(),
+                                        userExisting.get().getSurname(),
+                                        userExisting.get().getName()))
+                        );
+                        //------------------------------------------------------------
                         return new ResponseEntity<>(true,HttpStatus.ACCEPTED);
                     }
                     catch (Exception ex) {
@@ -180,6 +193,17 @@ public class UserService implements IUserService {
         if(!userExisting.isEmpty()) {
             try {
                 this.userRepository.delete(userExisting.get());
+
+                //kafkaEvent--------------------------------------------------
+                //surname and name are not important
+                this.kafkaService.emitKafkaEvent(
+                        "user-to-scouter-topic",
+                        new UserEventKafka("delete", new ScouterDTO(
+                                userExisting.get().getId(),
+                                userExisting.get().getSurname(),
+                                userExisting.get().getName()))
+                );
+                //------------------------------------------------------------
                 return new ResponseEntity<>(true,HttpStatus.OK);
             }
             catch (Exception ex) {

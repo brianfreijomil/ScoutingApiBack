@@ -1,7 +1,6 @@
 package com.microservice.player.repositories;
 
-import com.microservice.player.entities.Player;
-import com.microservice.player.entities.Stat;
+import com.microservice.player.model.entities.Stat;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

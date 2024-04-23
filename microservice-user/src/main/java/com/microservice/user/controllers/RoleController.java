@@ -1,8 +1,7 @@
 package com.microservice.user.controllers;
 
-import com.microservice.user.dtos.role.request.RoleRequestDTO;
-import com.microservice.user.dtos.role.response.RoleResponseDTO;
-import com.microservice.user.entities.Role;
+import com.microservice.user.model.dtos.role.request.RoleRequestDTO;
+import com.microservice.user.model.dtos.role.response.RoleResponseDTO;
 import com.microservice.user.services.interfaces.IRoleService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

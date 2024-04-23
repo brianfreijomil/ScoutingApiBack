@@ -1,6 +1,6 @@
 package com.microservice.player.repositories;
 
-import com.microservice.player.entities.Player;
+import com.microservice.player.model.entities.Player;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

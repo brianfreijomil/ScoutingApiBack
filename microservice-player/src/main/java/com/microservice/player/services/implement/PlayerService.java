@@ -1,16 +1,14 @@
 package com.microservice.player.services.implement;
 
-import com.microservice.player.dtos.clinic_report.response.ClinicReportResponseDTO;
-import com.microservice.player.dtos.player.request.PlayerMultimediaDTO;
-import com.microservice.player.dtos.player.request.PlayerRequestDTO;
-import com.microservice.player.dtos.player.response.PlayerResponseDTO;
-import com.microservice.player.dtos.player.response.PlayerSearchDTO;
-import com.microservice.player.dtos.scouter.request.ScouterRequestDTO;
-import com.microservice.player.dtos.stat.response.StatResponseDTO;
-import com.microservice.player.entities.ClinicReport;
-import com.microservice.player.entities.Player;
-import com.microservice.player.entities.Scouter;
-import com.microservice.player.entities.Stat;
+import com.microservice.player.model.dtos.clinic_report.response.ClinicReportResponseDTO;
+import com.microservice.player.model.dtos.player.request.PlayerMultimediaDTO;
+import com.microservice.player.model.dtos.player.request.PlayerRequestDTO;
+import com.microservice.player.model.dtos.player.response.PlayerResponseDTO;
+import com.microservice.player.model.dtos.player.response.PlayerSearchDTO;
+import com.microservice.player.model.dtos.scouter.request.ScouterRequestDTO;
+import com.microservice.player.model.dtos.stat.response.StatResponseDTO;
+import com.microservice.player.model.entities.Player;
+import com.microservice.player.model.entities.Scouter;
 import com.microservice.player.exceptions.ConflictExistException;
 import com.microservice.player.exceptions.ConflictPersistException;
 import com.microservice.player.exceptions.NotFoundException;
@@ -26,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -176,11 +173,11 @@ public class PlayerService implements IPlayerService {
 
     /* ----- Scouter Context ----- */
     @Transactional
-    public ResponseEntity<?> createScouter(@Valid ScouterRequestDTO scouter) {
+    public boolean createScouter(@Valid ScouterRequestDTO scouter) {
         if(!this.scouterRepository.existsById(scouter.getId())) {
             try {
                 this.scouterRepository.save(new Scouter(scouter));
-                return new ResponseEntity<>(true,HttpStatus.CREATED);
+                return true;
             }
             catch (Exception ex) {
                 throw new ConflictPersistException("create","Scouter","ID",scouter.getId().toString(), ex.getMessage());
@@ -190,40 +187,41 @@ public class PlayerService implements IPlayerService {
     }
 
     @Transactional
-    public ResponseEntity<?> updateScouter(ScouterRequestDTO scouter, Long scouterId) {
-        Optional<Scouter> scouterExisting = this.scouterRepository.findById(scouterId);
+    public boolean updateScouter(@Valid ScouterRequestDTO scouter) {
+        Optional<Scouter> scouterExisting = this.scouterRepository.findById(scouter.getId());
         if(!scouterExisting.isEmpty()) {
             try {
                 scouterExisting.get().setSurname(scouter.getSurname());
                 scouterExisting.get().setName(scouter.getName());
                 //the id cannot be editable
                 this.scouterRepository.save(scouterExisting.get());
-                return new ResponseEntity<>(true,HttpStatus.ACCEPTED);
+                return true;
             }
             catch (Exception ex) {
-                throw new ConflictPersistException("update","Scouter","ID",scouterId.toString(), ex.getMessage());
+                throw new ConflictPersistException("update","Scouter","ID",scouter.getId().toString(), ex.getMessage());
             }
         }
-        throw new NotFoundException("Scouter","ID",scouterId.toString());
+        throw new NotFoundException("Scouter","ID",scouter.getId().toString());
     }
 
     @Transactional
-    public ResponseEntity<?> deleteScouter(Long scouterId) {
+    public boolean deleteScouter(@Valid ScouterRequestDTO requestDTO) {
         /*
         * ANTES DE ELIMINAR EL SCOUTER (REFERENCIA A UN USUARIO) DEBO REEMPLAZAR
         * SU REFERENCIA EN LOS PLAYER QUE LA CONTENGAN
         * */
-        Optional<Scouter> scouterExisting = this.scouterRepository.findById(scouterId);
+        Optional<Scouter> scouterExisting = this.scouterRepository.findById(requestDTO.getId());
         if(!scouterExisting.isEmpty()) {
             try {
                 this.scouterRepository.delete(scouterExisting.get());
-                return new ResponseEntity<>(true,HttpStatus.OK);
+                return true;
             }
             catch (Exception ex) {
-                throw new ConflictPersistException("delete","Scouter","ID",scouterId.toString(), ex.getMessage());
+                throw new ConflictPersistException("delete","Scouter","ID",
+                        requestDTO.getId().toString(), ex.getMessage());
             }
         }
-        throw new NotFoundException("Scouter","ID",scouterId.toString());
+        throw new NotFoundException("Scouter","ID",requestDTO.getId().toString());
     }
 
 }

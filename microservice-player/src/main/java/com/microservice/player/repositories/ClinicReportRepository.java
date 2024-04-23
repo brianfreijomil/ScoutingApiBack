@@ -1,6 +1,6 @@
 package com.microservice.player.repositories;
 
-import com.microservice.player.entities.ClinicReport;
+import com.microservice.player.model.entities.ClinicReport;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

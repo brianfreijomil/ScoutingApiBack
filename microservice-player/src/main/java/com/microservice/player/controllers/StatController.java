@@ -1,8 +1,6 @@
 package com.microservice.player.controllers;
 
-import com.microservice.player.dtos.stat.request.StatRequestDTO;
-import com.microservice.player.entities.Player;
-import com.microservice.player.entities.Stat;
+import com.microservice.player.model.dtos.stat.request.StatRequestDTO;
 import com.microservice.player.services.interfaces.IStatService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

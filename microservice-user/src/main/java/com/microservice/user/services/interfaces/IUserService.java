@@ -1,9 +1,8 @@
 package com.microservice.user.services.interfaces;
 
-import com.microservice.user.dtos.user.request.LoginDTO;
-import com.microservice.user.dtos.user.request.UserRequestDTO;
-import com.microservice.user.dtos.user.response.UserResponseDTO;
-import com.microservice.user.entities.User;
+import com.microservice.user.model.dtos.user.request.LoginDTO;
+import com.microservice.user.model.dtos.user.request.UserRequestDTO;
+import com.microservice.user.model.dtos.user.response.UserResponseDTO;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;

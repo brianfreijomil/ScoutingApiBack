@@ -1,7 +1,6 @@
 package com.microservice.player.services.interfaces;
 
-import com.microservice.player.dtos.stat.request.StatRequestDTO;
-import com.microservice.player.entities.Stat;
+import com.microservice.player.model.dtos.stat.request.StatRequestDTO;
 import org.springframework.http.ResponseEntity;
 
 public interface IStatService {

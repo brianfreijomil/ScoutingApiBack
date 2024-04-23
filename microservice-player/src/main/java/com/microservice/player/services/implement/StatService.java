@@ -1,8 +1,8 @@
 package com.microservice.player.services.implement;
 
-import com.microservice.player.dtos.stat.request.StatRequestDTO;
-import com.microservice.player.entities.Player;
-import com.microservice.player.entities.Stat;
+import com.microservice.player.model.dtos.stat.request.StatRequestDTO;
+import com.microservice.player.model.entities.Player;
+import com.microservice.player.model.entities.Stat;
 import com.microservice.player.exceptions.ConflictPersistException;
 import com.microservice.player.exceptions.NotFoundException;
 import com.microservice.player.repositories.PlayerRepository;

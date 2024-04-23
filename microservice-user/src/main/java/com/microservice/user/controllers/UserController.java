@@ -1,8 +1,8 @@
 package com.microservice.user.controllers;
 
-import com.microservice.user.dtos.user.request.LoginDTO;
-import com.microservice.user.dtos.user.request.UserRequestDTO;
-import com.microservice.user.dtos.user.response.UserResponseDTO;
+import com.microservice.user.model.dtos.user.request.LoginDTO;
+import com.microservice.user.model.dtos.user.request.UserRequestDTO;
+import com.microservice.user.model.dtos.user.response.UserResponseDTO;
 import com.microservice.user.services.interfaces.IUserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

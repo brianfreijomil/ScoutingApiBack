@@ -1,7 +1,7 @@
 package com.microservice.user.services.interfaces;
 
-import com.microservice.user.dtos.role.request.RoleRequestDTO;
-import com.microservice.user.dtos.role.response.RoleResponseDTO;
+import com.microservice.user.model.dtos.role.request.RoleRequestDTO;
+import com.microservice.user.model.dtos.role.response.RoleResponseDTO;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;

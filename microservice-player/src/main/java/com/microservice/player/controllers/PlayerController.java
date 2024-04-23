@@ -1,17 +1,13 @@
 package com.microservice.player.controllers;
 
-import com.microservice.player.dtos.player.request.PlayerMultimediaDTO;
-import com.microservice.player.dtos.player.request.PlayerRequestDTO;
-import com.microservice.player.dtos.player.response.PlayerResponseDTO;
-import com.microservice.player.dtos.player.response.PlayerSearchDTO;
-import com.microservice.player.dtos.scouter.request.ScouterRequestDTO;
-import com.microservice.player.entities.Player;
-import com.microservice.player.http.response.ResponseApi;
+import com.microservice.player.model.dtos.player.request.PlayerMultimediaDTO;
+import com.microservice.player.model.dtos.player.request.PlayerRequestDTO;
+import com.microservice.player.model.dtos.player.response.PlayerResponseDTO;
+import com.microservice.player.model.dtos.player.response.PlayerSearchDTO;
+import com.microservice.player.model.dtos.scouter.request.ScouterRequestDTO;
 import com.microservice.player.services.interfaces.IPlayerService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,23 +48,6 @@ public class PlayerController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePlayer(@PathVariable Long id) {
        return this.playerService.delete(id);
-    }
-
-    /* ----- Scouter Context ----- */
-
-    @PostMapping("/scouter")
-    public ResponseEntity<?> createScouter(@RequestBody @Valid ScouterRequestDTO scouter) {
-        return this.playerService.createScouter(scouter);
-    }
-
-    @PutMapping("/scouter/{scouterId}")
-    public ResponseEntity<?> updateScouter(@RequestBody @Valid ScouterRequestDTO scouter, @PathVariable Long scouterId) {
-        return this.playerService.updateScouter(scouter,scouterId);
-    }
-
-    @DeleteMapping("/scouter/{scouterId}")
-    public ResponseEntity<?> deleteScouter(@PathVariable Long scouterId) {
-        return this.playerService.deleteScouter(scouterId);
     }
 
 }

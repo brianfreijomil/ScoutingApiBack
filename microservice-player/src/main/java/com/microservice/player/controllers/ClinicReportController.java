@@ -1,10 +1,7 @@
 package com.microservice.player.controllers;
 
-import com.microservice.player.dtos.clinic_report.request.ClinicReportRequestDTO;
-import com.microservice.player.entities.ClinicReport;
-import com.microservice.player.entities.Stat;
+import com.microservice.player.model.dtos.clinic_report.request.ClinicReportRequestDTO;
 import com.microservice.player.services.interfaces.IClinicReportService;
-import com.microservice.player.services.interfaces.IStatService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

@@ -1,8 +1,8 @@
 package com.microservice.player.services.implement;
 
-import com.microservice.player.dtos.clinic_report.request.ClinicReportRequestDTO;
-import com.microservice.player.entities.ClinicReport;
-import com.microservice.player.entities.Player;
+import com.microservice.player.model.dtos.clinic_report.request.ClinicReportRequestDTO;
+import com.microservice.player.model.entities.ClinicReport;
+import com.microservice.player.model.entities.Player;
 import com.microservice.player.exceptions.ConflictPersistException;
 import com.microservice.player.exceptions.NotFoundException;
 import com.microservice.player.repositories.ClinicReportRepository;

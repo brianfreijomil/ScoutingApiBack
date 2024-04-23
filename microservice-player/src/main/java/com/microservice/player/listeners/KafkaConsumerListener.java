@@ -1,14 +1,11 @@
 package com.microservice.player.listeners;
 
-import com.microservice.player.dtos.scouter.request.ScouterRequestDTO;
+import com.microservice.player.model.dtos.scouter.request.ScouterRequestDTO;
+import com.microservice.player.model.events_kafka.UserEventKafka;
 import com.microservice.player.services.interfaces.IPlayerService;
 import com.microservice.player.utils.JsonUtils;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -19,16 +16,37 @@ public class KafkaConsumerListener {
     @Autowired
     private IPlayerService playerService;
 
-    private Logger LOGGER = LoggerFactory.getLogger(KafkaConsumerListener.class);
+    //private Logger LOGGER = LoggerFactory.getLogger(KafkaConsumerListener.class);
 
     //groupId grupos de consumidores, recibe uno solo, comparte con los demas
-    @KafkaListener(topics = {"first-topic-scouting-app"}, groupId = "first-group-id")
+    //groupId = "first-group-id"
+    @KafkaListener(topics = {"user-to-scouter-topic"})
     public void listener(String message) {
 
-        ScouterRequestDTO scouter = JsonUtils.fromJson(message, ScouterRequestDTO.class);
-        //persist entity
-        this.playerService.createScouter(scouter);
+        UserEventKafka eventReceived = JsonUtils.fromJson(message, UserEventKafka.class);
+        ScouterRequestDTO scouter = new ScouterRequestDTO(
+                eventReceived.getEntity().getId(),
+                eventReceived.getEntity().getSurname(),
+                eventReceived.getEntity().getName());
 
-        log.info("Llego el scouter con el id: {}, apellido: {}, y nombre: {}", scouter.getId(), scouter.getSurname(),scouter.getName());
+        switch (eventReceived.getAction()) {
+            case "create":
+                this.playerService.createScouter(scouter);
+                break;
+            case "update":
+                this.playerService.updateScouter(scouter);
+                break;
+            case "delete":
+                this.playerService.deleteScouter(scouter);
+                break;
+            default:
+                log.error("Operación desconocida: {}", eventReceived.getAction());
+                break;
+        }
+
+        log.info(
+                "Llego el scouter con el id: {}, apellido: {}, y nombre: {}",
+                scouter.getId(), scouter.getSurname(),scouter.getName()
+        );
     }
 }
