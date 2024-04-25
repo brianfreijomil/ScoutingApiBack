@@ -1,8 +1,8 @@
 package com.microservice.calendar.controllers;
 
-import com.microservice.calendar.dtos.events.request.EventCalendarRequestDTO;
-import com.microservice.calendar.dtos.events.response.EventCalendarResponseDTO;
-import com.microservice.calendar.dtos.scouter.request.ScouterRequestDTO;
+import com.microservice.calendar.model.dtos.events.request.EventCalendarRequestDTO;
+import com.microservice.calendar.model.dtos.events.response.EventCalendarResponseDTO;
+import com.microservice.calendar.model.dtos.scouter.request.ScouterRequestDTO;
 import com.microservice.calendar.services.interfaces.ICalendarService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,23 +44,5 @@ public class CalendarController {
     public ResponseEntity<?> deleteEvent(@PathVariable Long eventId) {
         return this.calendarService.deleteEvent(eventId);
     }
-
-    /* ----- Scouter Context ----- */
-
-    @PostMapping("/scouters")
-    public ResponseEntity<?> createScouter(@RequestBody @Valid ScouterRequestDTO scouter) {
-        return this.calendarService.createScouter(scouter);
-    }
-
-    @PutMapping("/scouters/{scouterId}")
-    public ResponseEntity<?> updateScouter(@RequestBody @Valid ScouterRequestDTO scouter, @PathVariable Long scouterId) {
-        return this.calendarService.updateScouter(scouter,scouterId);
-    }
-
-    @DeleteMapping("/scouters/{scouterId}")
-    public ResponseEntity<?> deleteScouter(@PathVariable Long scouterId) {
-        return this.calendarService.deleteScouter(scouterId);
-    }
-
 
 }

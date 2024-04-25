@@ -1,8 +1,7 @@
-package com.microservice.calendar.dtos.events.response;
+package com.microservice.calendar.model.dtos.events.response;
 
-import com.microservice.calendar.dtos.scouter.response.ScouterResponseDTO;
-import com.microservice.calendar.entities.EventCalendar;
-import com.microservice.calendar.entities.Scouter;
+import com.microservice.calendar.model.dtos.scouter.response.ScouterResponseDTO;
+import com.microservice.calendar.model.entities.EventCalendar;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

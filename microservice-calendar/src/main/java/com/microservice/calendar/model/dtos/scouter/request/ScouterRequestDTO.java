@@ -1,4 +1,4 @@
-package com.microservice.calendar.dtos.scouter.request;
+package com.microservice.calendar.model.dtos.scouter.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

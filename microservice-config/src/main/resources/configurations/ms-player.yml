@@ -16,10 +16,10 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   kafka:
     bootstrapServers: localhost:9092
-    consumer:
-      groupId: scouter-service
-      keyDeserializer: org.apache.kafka.common.serialization.StringDeserializer
-      valueDeserializer: org.apache.kafka.common.serialization.StringDeserializer
+    ##consumer:
+      #groupId: scouter-management
+      #keyDeserializer: org.apache.kafka.common.serialization.StringDeserializer
+      #valueDeserializer: org.apache.kafka.common.serialization.StringDeserializer
 
 
 eureka:

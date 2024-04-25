@@ -58,7 +58,7 @@ public class RoleService implements IRoleService {
     @Override
     @Transactional
     public ResponseEntity<?> create(RoleRequestDTO role) {
-        if(this.roleRepository.findByType(role.getRoleName()) != null) {
+        if(this.roleRepository.findByType(role.getRoleName()) == null) {
             try {
                 this.roleRepository.save(new Role(role));
                 return new ResponseEntity<>(true, HttpStatus.CREATED);

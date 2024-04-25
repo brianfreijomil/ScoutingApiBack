@@ -1,4 +1,4 @@
-package com.microservice.calendar.dtos.scouter.response;
+package com.microservice.calendar.model.dtos.scouter.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

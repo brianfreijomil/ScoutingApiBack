@@ -1,9 +1,9 @@
-package com.microservice.player.listeners;
+package com.microservice.calendar.listeners;
 
-import com.microservice.player.model.dtos.scouter.request.ScouterRequestDTO;
-import com.microservice.player.model.events_kafka.UserEventKafka;
-import com.microservice.player.services.interfaces.IPlayerService;
-import com.microservice.player.utils.JsonUtils;
+import com.microservice.calendar.services.interfaces.ICalendarService;
+import com.microservice.calendar.model.dtos.scouter.request.ScouterRequestDTO;
+import com.microservice.calendar.model.events_kafka.UserEventKafka;
+import com.microservice.calendar.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -14,13 +14,13 @@ import org.springframework.stereotype.Component;
 public class KafkaConsumerListener {
 
     @Autowired
-    private IPlayerService playerService;
+    private ICalendarService calendarService;
 
     //private Logger LOGGER = LoggerFactory.getLogger(KafkaConsumerListener.class);
 
     //groupId grupos de consumidores, recibe uno solo, comparte con los demas
     //groupId = "first-group-id"
-    @KafkaListener(topics = {"scouter-management-topic"}, groupId = "scouter-player-management")
+    @KafkaListener(topics = {"scouter-management-topic"}, groupId = "scouter-calendar-management")
     public void listener(String message) {
 
         UserEventKafka eventReceived = JsonUtils.fromJson(message, UserEventKafka.class);
@@ -31,13 +31,13 @@ public class KafkaConsumerListener {
 
         switch (eventReceived.getAction()) {
             case "create":
-                this.playerService.createScouter(scouter);
+                this.calendarService.createScouter(scouter);
                 break;
             case "update":
-                this.playerService.updateScouter(scouter);
+                this.calendarService.updateScouter(scouter);
                 break;
             case "delete":
-                this.playerService.deleteScouter(scouter);
+                this.calendarService.deleteScouter(scouter);
                 break;
             default:
                 log.error("Operación desconocida: {}", eventReceived.getAction());

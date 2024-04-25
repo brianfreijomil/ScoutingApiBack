@@ -1,8 +1,8 @@
 package com.microservice.calendar.services.interfaces;
 
-import com.microservice.calendar.dtos.events.request.EventCalendarRequestDTO;
-import com.microservice.calendar.dtos.events.response.EventCalendarResponseDTO;
-import com.microservice.calendar.dtos.scouter.request.ScouterRequestDTO;
+import com.microservice.calendar.model.dtos.events.request.EventCalendarRequestDTO;
+import com.microservice.calendar.model.dtos.events.response.EventCalendarResponseDTO;
+import com.microservice.calendar.model.dtos.scouter.request.ScouterRequestDTO;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -19,10 +19,10 @@ public interface ICalendarService {
 
     ResponseEntity<?> deleteEvent(Long eventId);
 
-    ResponseEntity<?> createScouter(ScouterRequestDTO scouter);
+    boolean createScouter(ScouterRequestDTO scouter);
 
-    ResponseEntity<?> updateScouter(ScouterRequestDTO scouter, Long scouterId);
+    boolean updateScouter(ScouterRequestDTO scouter);
 
-    ResponseEntity<?> deleteScouter(Long scouterId);
+    boolean deleteScouter(ScouterRequestDTO scouter);
 
 }

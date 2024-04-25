@@ -83,7 +83,7 @@ public class UserService implements IUserService {
 
                     //kafkaEvent--------------------------------------------------
                     this.kafkaService.emitKafkaEvent(
-                            "user-to-scouter-topic",
+                            "scouter-management-topic",
                             new UserEventKafka("create", new ScouterDTO(
                                             userCreated.getId(),
                                             userCreated.getSurname(),
@@ -131,7 +131,7 @@ public class UserService implements IUserService {
 
                         //kafkaEvent--------------------------------------------------
                         this.kafkaService.emitKafkaEvent(
-                                "user-to-scouter-topic",
+                                "scouter-management-topic",
                                 new UserEventKafka("update", new ScouterDTO(
                                         userExisting.get().getId(),
                                         userExisting.get().getSurname(),
@@ -197,7 +197,7 @@ public class UserService implements IUserService {
                 //kafkaEvent--------------------------------------------------
                 //surname and name are not important
                 this.kafkaService.emitKafkaEvent(
-                        "user-to-scouter-topic",
+                        "scouter-management-topic",
                         new UserEventKafka("delete", new ScouterDTO(
                                 userExisting.get().getId(),
                                 userExisting.get().getSurname(),

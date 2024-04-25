@@ -1,17 +1,18 @@
 package com.microservice.calendar.services.implement;
 
-import com.microservice.calendar.dtos.events.request.EventCalendarRequestDTO;
-import com.microservice.calendar.dtos.events.response.EventCalendarResponseDTO;
-import com.microservice.calendar.dtos.scouter.request.ScouterRequestDTO;
-import com.microservice.calendar.dtos.scouter.response.ScouterResponseDTO;
-import com.microservice.calendar.entities.EventCalendar;
-import com.microservice.calendar.entities.Scouter;
+import com.microservice.calendar.model.dtos.events.request.EventCalendarRequestDTO;
+import com.microservice.calendar.model.dtos.events.response.EventCalendarResponseDTO;
+import com.microservice.calendar.model.dtos.scouter.request.ScouterRequestDTO;
+import com.microservice.calendar.model.dtos.scouter.response.ScouterResponseDTO;
+import com.microservice.calendar.model.entities.EventCalendar;
+import com.microservice.calendar.model.entities.Scouter;
 import com.microservice.calendar.exceptions.ConflictExistException;
 import com.microservice.calendar.exceptions.ConflictPersistException;
 import com.microservice.calendar.exceptions.NotFoundException;
 import com.microservice.calendar.repositories.EventCalendarRepository;
 import com.microservice.calendar.repositories.ScouterRepository;
 import com.microservice.calendar.services.interfaces.ICalendarService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +30,6 @@ public class CalendarService implements ICalendarService {
     private EventCalendarRepository eventCalendarRepository;
     @Autowired
     private ScouterRepository scouterRepository;
-
-    /* ----- Events Context ----- */
 
     @Override
     @Transactional(readOnly = true)
@@ -124,11 +123,11 @@ public class CalendarService implements ICalendarService {
 
     /* ----- Scouter Context ----- */
     @Transactional
-    public ResponseEntity<?> createScouter(ScouterRequestDTO scouter) {
+    public boolean createScouter(@Valid ScouterRequestDTO scouter) {
         if(!this.scouterRepository.existsById(scouter.getId())) {
             try {
                 this.scouterRepository.save(new Scouter(scouter));
-                return new ResponseEntity<>(true, HttpStatus.CREATED);
+                return true;
             }
             catch (Exception ex) {
                 throw new ConflictPersistException("create","Scouter","ID",scouter.getId().toString(), ex.getMessage());
@@ -138,39 +137,39 @@ public class CalendarService implements ICalendarService {
     }
 
     @Transactional
-    public ResponseEntity<?> updateScouter(ScouterRequestDTO scouter, Long scouterId) {
-        Optional<Scouter> scouterExisting = this.scouterRepository.findById(scouterId);
+    public boolean updateScouter(@Valid ScouterRequestDTO scouter) {
+        Optional<Scouter> scouterExisting = this.scouterRepository.findById(scouter.getId());
         if(!scouterExisting.isEmpty()) {
             try {
                 scouterExisting.get().setSurname(scouter.getSurname());
                 scouterExisting.get().setName(scouter.getName());
                 //the id cannot be editable
                 this.scouterRepository.save(scouterExisting.get());
-                return new ResponseEntity<>(true,HttpStatus.ACCEPTED);
+                return true;
             }
             catch (Exception ex) {
-                throw new ConflictPersistException("update","Scouter","ID",scouterId.toString(), ex.getMessage());
+                throw new ConflictPersistException("update","Scouter","ID",scouter.getId().toString(), ex.getMessage());
             }
         }
-        throw new NotFoundException("Scouter","ID",scouterId.toString());
+        throw new NotFoundException("Scouter","ID",scouter.getId().toString());
     }
 
     @Transactional
-    public ResponseEntity<?> deleteScouter(Long scouterId) {
+    public boolean deleteScouter(@Valid ScouterRequestDTO requestDTO) {
         /*
          * ANTES DE ELIMINAR EL SCOUTER (REFERENCIA A UN USUARIO) DEBO REEMPLAZAR
          * SU REFERENCIA EN LOS PLAYER QUE LA CONTENGAN
          * */
-        Optional<Scouter> scouterExisting = this.scouterRepository.findById(scouterId);
+        Optional<Scouter> scouterExisting = this.scouterRepository.findById(requestDTO.getId());
         if(!scouterExisting.isEmpty()) {
             try {
                 this.scouterRepository.delete(scouterExisting.get());
-                return new ResponseEntity<>(true,HttpStatus.OK);
+                return true;
             }
             catch (Exception ex) {
-                throw new ConflictPersistException("delete","Scouter","ID",scouterId.toString(), ex.getMessage());
+                throw new ConflictPersistException("delete","Scouter","ID",requestDTO.getId().toString(), ex.getMessage());
             }
         }
-        throw new NotFoundException("Scouter","ID",scouterId.toString());
+        throw new NotFoundException("Scouter","ID",requestDTO.getId().toString());
     }
 }

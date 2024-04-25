@@ -16,10 +16,10 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   kafka:
     bootstrapServers: localhost:9092
-    producer:
-      retries: 1
-      keySerializer: org.apache.kafka.common.serialization.StringSerializer
-      valueSerializer: org.apache.kafka.common.serialization.StringSerializer
+    #producer:
+     # retries: 1
+      #keySerializer: org.apache.kafka.common.serialization.StringSerializer
+      #valueSerializer: org.apache.kafka.common.serialization.StringSerializer
 
 eureka:
   instance:

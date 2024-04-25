@@ -80,7 +80,7 @@ public class PlayerService implements IPlayerService {
     @Override
     @Transactional
     public ResponseEntity<?> create(PlayerRequestDTO player) {
-        if (this.playerRepository.findByDni(player.getDni()) != null) {
+        if (this.playerRepository.findByDni(player.getDni()) == null) {
             try {
                 Player newPlayer = new Player(player);
                 this.playerRepository.save(newPlayer);

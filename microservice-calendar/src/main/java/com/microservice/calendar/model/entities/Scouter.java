@@ -1,12 +1,10 @@
-package com.microservice.calendar.entities;
+package com.microservice.calendar.model.entities;
 
-import com.microservice.calendar.dtos.scouter.request.ScouterRequestDTO;
+import com.microservice.calendar.model.dtos.scouter.request.ScouterRequestDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Entity
 @Data

@@ -1,6 +1,6 @@
-package com.microservice.calendar.dtos.events.request;
+package com.microservice.calendar.model.dtos.events.request;
 
-import com.microservice.calendar.entities.Scouter;
+import com.microservice.calendar.model.entities.Scouter;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

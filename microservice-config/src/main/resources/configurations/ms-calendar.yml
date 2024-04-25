@@ -14,6 +14,12 @@ spring:
       ddl-auto: create
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  kafka:
+    bootstrapServers: localhost:9092
+    #consumer:
+      #groupId: scouter-management
+      #keyDeserializer: org.apache.kafka.common.serialization.StringDeserializer
+      #valueDeserializer: org.apache.kafka.common.serialization.StringDeserializer
 
 eureka:
   instance:
