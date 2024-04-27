@@ -1,34 +1,85 @@
 package com.microservice.gateway.config;
 
-import com.microservice.gateway.config.filter.JwtTokenValidator;
-import com.microservice.gateway.services.UserDetailService;
-import com.microservice.gateway.util.JwtUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.codec.ServerCodecConfigurer;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.InMemoryReactiveClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+
 
 /*
-@Configuration
-@EnableWebSecurity
+
 @EnableMethodSecurity
 */
+@Configuration
 public class SecurityConfig {
 
     /*
     @Autowired
     private JwtUtils jwtUtils;
+    */
+    @Bean
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+        http
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .authorizeExchange(auth -> {
+                    auth.anyExchange().authenticated();
+                })
+                .oauth2Login(Customizer.withDefaults());
+
+        return http.build();
+    }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AuthenticationProvider authenticationProvider) throws Exception {
-        return httpSecurity
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(http -> {
-                    // EndPoints publics
+    public ReactiveClientRegistrationRepository clientRegistrationRepository() {
+        return new InMemoryReactiveClientRegistrationRepository(this.clientRegistration());
+    }
+
+
+    private ClientRegistration clientRegistration() {
+        return ClientRegistration.withRegistrationId("default")
+                .clientId("microservices_client")
+                .clientSecret("dAuywT9ejF1DbXWuUudKRXssQlhmbqKj")
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .redirectUri("{baseUrl}/login/oauth2/code/keycloak")
+                .scope("openid")
+                .authorizationUri("http://localhost:8181/realms/microservices-realm/protocol/openid-connect/auth")
+                .tokenUri("http://localhost:8181/realms/microservices-realm/protocol/openid-connect/token")
+                .userInfoUri("http://localhost:8181/realms/microservices-realm/protocol/openid-connect/userinfo")
+                .jwkSetUri("http://localhost:8181/realms/microservices-realm/protocol/openid-connect/certs")
+                .clientName("Microservices Client")
+                .build();
+    }
+
+}
+
+    /*
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider(UserDetailService userDetailService) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(passwordEncoder());
+        provider.setUserDetailsService(userDetailService);
+        return provider;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+
+
+    // EndPoints publics
                     http.requestMatchers(HttpMethod.POST, "/api/users/log-in").permitAll();
 
                     // EndPoints user privates
@@ -67,28 +118,6 @@ public class SecurityConfig {
                     http.requestMatchers(HttpMethod.DELETE, "/api/calendar/**").hasAnyRole("DVELOPER","ADMIN");
 
                     http.anyRequest().denyAll();
-                })
-                .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)
-                .build();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    @Bean
-    public AuthenticationProvider authenticationProvider(UserDetailService userDetailService) {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(passwordEncoder());
-        provider.setUserDetailsService(userDetailService);
-        return provider;
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
      */
-}
+

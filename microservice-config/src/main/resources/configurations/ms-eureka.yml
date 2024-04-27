@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: ms-eureka
+  security:
+    user:
+      name: eureka
+      password: password
 
 eureka:
   instance:
@@ -13,3 +17,10 @@ eureka:
     fetch-registry: false
     server-url:
       defaultZone: http://localhost:${server.port}/eureka/
+
+logging:
+  level:
+    org:
+      springframework:
+        web: debug
+        security: debug
