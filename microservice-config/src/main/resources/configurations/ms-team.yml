@@ -18,11 +18,11 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwkSetUri: http://localhost:8181/realms/microservices-realm/protocol/openid-connect/certs
+          jwk-set-uri: http://localhost:8181/realms/spring-microservices-realm/protocol/openid-connect/certs
 
 eureka:
   instance:
     hostname: localhost
   client:
     service-url:
-      defaultZone: http://eureka:password@localhost:8761/eureka
+      defaultZone: http://localhost:8761/eureka

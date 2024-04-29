@@ -1,4 +1,5 @@
-package com.microservice.user.config;
+
+package com.microservice.player.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.microservice.user.config;
+package com.microservice.recruitment_stats.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

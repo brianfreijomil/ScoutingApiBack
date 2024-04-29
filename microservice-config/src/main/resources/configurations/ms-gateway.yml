@@ -3,30 +3,39 @@ eureka:
     hostname: localhost
   client:
     service-url:
-      defaultZone: http://eureka:password@localhost:8761/eureka
+      defaultZone: http://localhost:8761/eureka
 
 server:
   port: 8080
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   application:
     name: ms-gateway
+  security.oauth2:
+    resourceserver:
+      jwt:
+        jwk-set-uri: http://localhost:8181/realms/spring-microservices-realm/protocol/openid-connect/certs
+    client:
+      provider:
+        keycloak:
+          issuer-uri: http://localhost:8181/realms/spring-microservices-realm
+      registration:
+        spring-with-test-scope:
+          provider: keycloak
+          client-id: scouting-client-id
+          client-secret: YC9sJGAhUE9vKOXb1Y1vKgtd1GnoljPj
+          authorization-grant-type: authorization_code
+          scope: openid
   cloud:
     gateway:
+      default-filters:
+        - TokenRelay=
       discovery:
         locator:
           enabled: true
       routes:
-        - id: discovery
-          uri: http://localhost:8761
-          predicates:
-            - Path=/eureka/web
-          filters:
-            - SetPath=/
-        - id: discovery-static
-          uri: http://localhost:8761
-          predicates:
-            - Path=/eureka/**
         - id: users
           uri: http://localhost:8093
           predicates:
@@ -59,20 +68,20 @@ spring:
           uri: http://localhost:8092
           predicates:
             - Path=/api/recruitment_stats/**
-      default-filters:
-        - SaveSession
-        - TokenRelay
-  security:
-    oauth2:
-      client:
-        provider:
-          keycloak:
-            issuerUri: http://localhost:8181/realms/microservices-realm
-      registration:
-        keycloak:
-          provider: keycloak
-          scope: openid
-          clientId: microservices_client
-          clientSecret: dAuywT9ejF1DbXWuUudKRXssQlhmbqKj
-          authorizationGrantType: authorization_code
-          redirectUri: {baseUrl}/login/oauth2/code/keycloak
+      ##default-filters:
+        ##- SaveSession
+        ##- TokenRelay
+  ##security:
+    ##oauth2:
+      ##client:
+        ##provider:
+          ##keycloak:
+            ##issuerUri: http://localhost:8181/realms/microservices-realm
+      ##registration:
+        ##keycloak:
+          ##provider: keycloak
+          ##scope: openid
+          ##clientId: microservices_client
+          ##clientSecret: dAuywT9ejF1DbXWuUudKRXssQlhmbqKj
+          ##authorizationGrantType: authorization_code
+          ##redirectUri: {baseUrl}/login/oauth2/code/keycloak
