@@ -22,12 +22,28 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
-    @PreAuthorize("hasAuthority('SCOPE_TEST')")
-    @GetMapping("/ping")
-    public String ping() {
-        SecurityContext context = (SecurityContext) SecurityContextHolder.getContext();
-        Authentication authentication = context.getAuthentication();
-        return "Scopes: " + authentication.getAuthorities();
+    @PreAuthorize("hasRole('ADMIN_SCOUTING_ROLE')")
+    @GetMapping("/ping-admin")
+    public String pingAdmin() {
+        return "hola admin";
+    }
+
+    @PreAuthorize("hasRole('USER_SCOUTING_ROLE')")
+    @GetMapping("/ping-user")
+    public String pingUser() {
+        return "hola user";
+    }
+
+    @PreAuthorize("hasRole('USER_SCOUTING_ROLE') or hasRole('ADMIN_SCOUTING_ROLE')")
+    @GetMapping("/ping-admin-user")
+    public String pingAdminUser() {
+        return "hola user";
+    }
+
+    @PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE')")
+    @GetMapping("/ping-developer")
+    public String pingDeveloper() {
+        return "hola developer";
     }
 
     @GetMapping("")
