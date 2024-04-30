@@ -2,9 +2,12 @@ package com.microservice.user.controllers;
 
 import com.microservice.user.model.dtos.user.request.LoginDTO;
 import com.microservice.user.model.dtos.user.request.UserRequestDTO;
+import com.microservice.user.model.dtos.user.request.UserRequestKCDTO;
 import com.microservice.user.model.dtos.user.response.UserResponseDTO;
+import com.microservice.user.services.interfaces.IKeycloakService;
 import com.microservice.user.services.interfaces.IUserService;
 import jakarta.validation.Valid;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +24,38 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+    @Autowired
+    private IKeycloakService keycloakService;
+
+    @GetMapping("/keycloak/users")
+    @PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE') or hasRole('ADMIN_SCOUTING_ROLE')")
+    public List<UserRepresentation> getUsersKeycloak() {
+        return this.keycloakService.findAllUsers();
+    }
+
+    @GetMapping("/keycloak/users/{username}")
+    @PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE') or hasRole('ADMIN_SCOUTING_ROLE')")
+    public List<UserRepresentation> getUserByUsernameKeycloak(@PathVariable String username) {
+        return this.keycloakService.searchUserByUsername(username);
+    }
+
+    @PostMapping("/keycloak/users/create")
+    @PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE') or hasRole('ADMIN_SCOUTING_ROLE')")
+    public ResponseEntity<?> createUserKeycloak(@RequestBody @Valid UserRequestKCDTO user) {
+        return this.keycloakService.createUser(user);
+    }
+
+    @PutMapping("/keycloak/users/{userId}")
+    @PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE') or hasRole('ADMIN_SCOUTING_ROLE')")
+    public ResponseEntity<?> updateUserKeycloak(@RequestBody @Valid UserRequestKCDTO user, @PathVariable String userId) {
+        return this.keycloakService.updateUser(userId,user);
+    }
+
+    @DeleteMapping("/keycloak/users/{userId}")
+    @PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE') or hasRole('ADMIN_SCOUTING_ROLE')")
+    public ResponseEntity<?> deleteUserKeycloak(@PathVariable String userId) {
+        return this.keycloakService.deleteUser(userId);
+    }
 
     @PreAuthorize("hasRole('ADMIN_SCOUTING_ROLE')")
     @GetMapping("/ping-admin")
