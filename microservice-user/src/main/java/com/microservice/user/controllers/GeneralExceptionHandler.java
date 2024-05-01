@@ -1,9 +1,6 @@
 package com.microservice.user.controllers;
 
-import com.microservice.user.exceptions.ConflictExistException;
-import com.microservice.user.exceptions.ConflictPersistException;
-import com.microservice.user.exceptions.ErrorDTO;
-import com.microservice.user.exceptions.NotFoundException;
+import com.microservice.user.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -27,6 +24,11 @@ public class GeneralExceptionHandler {
 
     @ExceptionHandler(ConflictExistException.class)
     public ResponseEntity conflictExistException(ConflictExistException exception) {
+        return new ResponseEntity(new ErrorDTO(exception.getMessage()), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ConflictKeycloakException.class)
+    public ResponseEntity conflictKeycloakException(ConflictKeycloakException exception) {
         return new ResponseEntity(new ErrorDTO(exception.getMessage()), HttpStatus.CONFLICT);
     }
 

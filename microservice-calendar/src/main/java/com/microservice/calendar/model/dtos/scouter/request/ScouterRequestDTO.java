@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 public class ScouterRequestDTO {
 
     @NotNull(message = "ID cannot be null")
-    private Long id;
+    @NotEmpty(message = "ID cannot be empty")
+    private String id;
     @NotNull(message = "surname cannot be null")
     @NotEmpty(message = "surname cannot be empty")
     private String surname;
     @NotNull(message = "name cannot be null")
     @NotEmpty(message = "name cannot be empty")
     private String name;
-
 }

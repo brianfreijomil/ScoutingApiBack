@@ -1,7 +1,7 @@
 package com.microservice.calendar.listeners;
 
-import com.microservice.calendar.services.interfaces.ICalendarService;
 import com.microservice.calendar.model.dtos.scouter.request.ScouterRequestDTO;
+import com.microservice.calendar.services.interfaces.ICalendarService;
 import com.microservice.calendar.model.events_kafka.UserEventKafka;
 import com.microservice.calendar.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -40,12 +40,12 @@ public class KafkaConsumerListener {
                 this.calendarService.deleteScouter(scouter);
                 break;
             default:
-                log.error("Operación desconocida: {}", eventReceived.getAction());
+                log.error("Unknow operation: {}", eventReceived.getAction());
                 break;
         }
 
         log.info(
-                "Llego el scouter con el id: {}, apellido: {}, y nombre: {}",
+                "a user arrived with id: {}, lastname: {}, y firstname: {}",
                 scouter.getId(), scouter.getSurname(),scouter.getName()
         );
     }

@@ -45,7 +45,7 @@ public class KafkaConsumerListener {
         }
 
         log.info(
-                "Llego el scouter con el id: {}, apellido: {}, y nombre: {}",
+                "a user arrived with id: {}, lastname: {}, y firstname: {}",
                 scouter.getId(), scouter.getSurname(),scouter.getName()
         );
     }

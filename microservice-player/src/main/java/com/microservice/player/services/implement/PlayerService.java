@@ -81,15 +81,18 @@ public class PlayerService implements IPlayerService {
     @Transactional
     public ResponseEntity<?> create(PlayerRequestDTO player) {
         if (this.playerRepository.findByDni(player.getDni()) == null) {
-            try {
-                Player newPlayer = new Player(player);
-                this.playerRepository.save(newPlayer);
-                return new ResponseEntity<>(true,HttpStatus.CREATED);
+            Optional<Scouter> scouter = this.scouterRepository.findById(player.getScouter().getId());
+            if(!scouter.isEmpty()) {
+                try {
+                    Player newPlayer = new Player(player,scouter.get());
+                    this.playerRepository.save(newPlayer);
+                    return new ResponseEntity<>(true,HttpStatus.CREATED);
+                }
+                catch (Exception ex) {
+                    throw new ConflictPersistException("save","Player","ID",player.getDni().toString(),ex.getMessage());
+                }
             }
-            catch (Exception ex) {
-                throw new ConflictPersistException("save","Player","ID",player.getDni().toString(),ex.getMessage());
-            }
-
+            throw new NotFoundException("Scouter","ID",player.getScouter().getId());
         }
         throw new ConflictExistException("Player","ID",player.getDni().toString());
     }
@@ -172,6 +175,8 @@ public class PlayerService implements IPlayerService {
     }
 
     /* ----- Scouter Context ----- */
+
+    @Override
     @Transactional
     public boolean createScouter(@Valid ScouterRequestDTO scouter) {
         if(!this.scouterRepository.existsById(scouter.getId())) {
@@ -180,12 +185,13 @@ public class PlayerService implements IPlayerService {
                 return true;
             }
             catch (Exception ex) {
-                throw new ConflictPersistException("create","Scouter","ID",scouter.getId().toString(), ex.getMessage());
+                throw new ConflictPersistException("create","Scouter","ID",scouter.getId(), ex.getMessage());
             }
         }
-        throw new ConflictExistException("Scouter","ID",scouter.getId().toString());
+        throw new ConflictExistException("Scouter","ID",scouter.getId());
     }
 
+    @Override
     @Transactional
     public boolean updateScouter(@Valid ScouterRequestDTO scouter) {
         Optional<Scouter> scouterExisting = this.scouterRepository.findById(scouter.getId());
@@ -198,12 +204,13 @@ public class PlayerService implements IPlayerService {
                 return true;
             }
             catch (Exception ex) {
-                throw new ConflictPersistException("update","Scouter","ID",scouter.getId().toString(), ex.getMessage());
+                throw new ConflictPersistException("update","Scouter","ID",scouter.getId(), ex.getMessage());
             }
         }
-        throw new NotFoundException("Scouter","ID",scouter.getId().toString());
+        throw new NotFoundException("Scouter","ID",scouter.getId());
     }
 
+    @Override
     @Transactional
     public boolean deleteScouter(@Valid ScouterRequestDTO requestDTO) {
         /*
@@ -218,10 +225,10 @@ public class PlayerService implements IPlayerService {
             }
             catch (Exception ex) {
                 throw new ConflictPersistException("delete","Scouter","ID",
-                        requestDTO.getId().toString(), ex.getMessage());
+                        requestDTO.getId(), ex.getMessage());
             }
         }
-        throw new NotFoundException("Scouter","ID",requestDTO.getId().toString());
+        throw new NotFoundException("Scouter","ID",requestDTO.getId());
     }
 
 }

@@ -1,5 +1,6 @@
 package com.microservice.player.model.dtos.player.request;
 
+import com.microservice.player.model.dtos.scouter.request.ScouterRequestDTO;
 import com.microservice.player.model.entities.Scouter;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -41,7 +42,7 @@ public class PlayerRequestDTO {
     private String valoration;
     private String characteristics;
     @NotNull(message = "scouter cannot be null")
-    private Scouter scouter;
+    private ScouterRequestDTO scouter;
     @NotNull(message = "dateSeen cannot be null")
     private Date dateSeen;
     @NotNull(message = "divisionSeen cannot be null")

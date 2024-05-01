@@ -14,7 +14,8 @@ import lombok.NoArgsConstructor;
 public class Scouter {
 
     @Id
-    private Long id;
+    @Column(nullable = false)
+    private String id;
 
     @Column(nullable = false)
     private String surname;

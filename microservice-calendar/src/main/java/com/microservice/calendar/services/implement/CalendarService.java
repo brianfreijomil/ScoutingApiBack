@@ -3,7 +3,6 @@ package com.microservice.calendar.services.implement;
 import com.microservice.calendar.model.dtos.events.request.EventCalendarRequestDTO;
 import com.microservice.calendar.model.dtos.events.response.EventCalendarResponseDTO;
 import com.microservice.calendar.model.dtos.scouter.request.ScouterRequestDTO;
-import com.microservice.calendar.model.dtos.scouter.response.ScouterResponseDTO;
 import com.microservice.calendar.model.entities.EventCalendar;
 import com.microservice.calendar.model.entities.Scouter;
 import com.microservice.calendar.exceptions.ConflictExistException;
@@ -13,12 +12,14 @@ import com.microservice.calendar.repositories.EventCalendarRepository;
 import com.microservice.calendar.repositories.ScouterRepository;
 import com.microservice.calendar.services.interfaces.ICalendarService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,16 +37,7 @@ public class CalendarService implements ICalendarService {
     public List<EventCalendarResponseDTO> getAllbyTeamId(Long teamId) {
         return this.eventCalendarRepository.findAllByTeamId(teamId)
                 .stream()
-                .map(event -> new EventCalendarResponseDTO(
-                        event,
-                        event.getScouters()
-                                .stream()
-                                .map(scouter -> new ScouterResponseDTO(
-                                        scouter.getId(),
-                                        scouter.getSurname(),
-                                        scouter.getName()
-                                ))
-                                .collect(Collectors.toList())))
+                .map(event -> new EventCalendarResponseDTO(event))
                 .collect(Collectors.toList());
     }
 
@@ -54,14 +46,7 @@ public class CalendarService implements ICalendarService {
     public EventCalendarResponseDTO getById(Long eventId) {
         Optional<EventCalendar> event = this.eventCalendarRepository.findById(eventId);
         if(!event.isEmpty()) {
-            return new EventCalendarResponseDTO(
-                    event.get(),
-                    event.get().getScouters()
-                            .stream()
-                            .map(scouter -> new ScouterResponseDTO(
-                                    scouter.getId(),scouter.getSurname(),
-                                    scouter.getName()))
-                            .collect(Collectors.toList()));
+            return new EventCalendarResponseDTO(event.get());
         }
         throw new NotFoundException("EventCalendar","ID",eventId.toString());
     }
@@ -70,7 +55,16 @@ public class CalendarService implements ICalendarService {
     @Transactional
     public ResponseEntity<?> createEvent(EventCalendarRequestDTO event) {
         try {
-            this.eventCalendarRepository.save(new EventCalendar(event));
+            EventCalendar newEventCalendar = new EventCalendar(event);
+
+            List<Scouter> scoutersExisting = new ArrayList<>();
+
+            for (ScouterRequestDTO s:event.getScouters()) {
+                Optional<Scouter> scouter = this.scouterRepository.findById(s.getId());
+                if(!scouter.isEmpty())
+                    newEventCalendar.addScouterToEvent(scouter.get());
+            }
+            this.eventCalendarRepository.save(newEventCalendar);
             return new ResponseEntity<>(true,HttpStatus.CREATED);
         }
         catch (Exception ex) {
@@ -85,11 +79,16 @@ public class CalendarService implements ICalendarService {
         if(!eventExisting.isEmpty()) {
             try {
                 //verifico si algun scouter no existe
-                for (Scouter scouter : eventExisting.get().getScouters()) {
+                for (ScouterRequestDTO scouter : event.getScouters()) {
                     if(!this.scouterRepository.existsById(scouter.getId())) {
                         throw new NotFoundException("Scouter","ID",scouter.getId().toString());
                     }
                 }
+                eventExisting.get().setScouters(
+                        event.getScouters()
+                        .stream()
+                        .map(s -> new Scouter(s.getId(),s.getSurname(),s.getName()))
+                        .collect(Collectors.toList()));
                 eventExisting.get().setTitle(event.getTitle());
                 eventExisting.get().setDateInit(event.getDateInit());
                 eventExisting.get().setDateEnd(event.getDateEnd());
@@ -126,7 +125,8 @@ public class CalendarService implements ICalendarService {
     public boolean createScouter(@Valid ScouterRequestDTO scouter) {
         if(!this.scouterRepository.existsById(scouter.getId())) {
             try {
-                this.scouterRepository.save(new Scouter(scouter));
+                this.scouterRepository.save(
+                        new Scouter(scouter.getId(), scouter.getSurname(), scouter.getName()));
                 return true;
             }
             catch (Exception ex) {

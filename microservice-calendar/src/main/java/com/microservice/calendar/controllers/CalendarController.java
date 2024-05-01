@@ -2,7 +2,6 @@ package com.microservice.calendar.controllers;
 
 import com.microservice.calendar.model.dtos.events.request.EventCalendarRequestDTO;
 import com.microservice.calendar.model.dtos.events.response.EventCalendarResponseDTO;
-import com.microservice.calendar.model.dtos.scouter.request.ScouterRequestDTO;
 import com.microservice.calendar.services.interfaces.ICalendarService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -6,16 +6,20 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRequestDTO {
 
-    @NotNull(message = "ID cannot be null")
     private Long id;
     @NotNull(message = "username cannot be null")
     @NotEmpty(message = "username cannot be empty")
     private String username;
+    @NotNull(message = "email cannot be null")
+    @NotEmpty(message = "email cannot be empty")
+    private String email;
     @NotNull(message = "surname cannot be null")
     @NotEmpty(message = "surname cannot be empty")
     private String surname;
@@ -25,12 +29,6 @@ public class UserRequestDTO {
     @NotNull(message = "password cannot be null")
     @NotEmpty(message = "password cannot be empty")
     private String password;
-    @NotNull(message = "roleDescription cannot be null")
-    @NotEmpty(message = "roleDescription cannot be empty")
-    private String roleDescription;
-    @NotNull(message = "enabled cannot be null")
-    private Boolean enabled;
-    @NotNull(message = "teamId cannot be null")
-    private Long teamId;
+    private Set<String> roles;
 
 }

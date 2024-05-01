@@ -19,3 +19,9 @@ Microservices Ports:
 ## Kafka Service : 9092
 
 ## Keycloak Service : 8181
+
+RECORDATORIOS :
+* el metodo create de user deberia preguntar antes si existe el usuario por username
+* respuesta de error 500 en create user
+* preguntar si el usuario existe antes de realizar la accion? en update y delete de usuario
+* borrado de scouter en microservicios player y calendar (critico)

@@ -1,8 +1,14 @@
 package com.microservice.user.services.implement;
 
 import com.microservice.user.exceptions.ConflictExistException;
+import com.microservice.user.exceptions.ConflictKeycloakException;
 import com.microservice.user.exceptions.ConflictPersistException;
-import com.microservice.user.model.dtos.user.request.UserRequestKCDTO;
+import com.microservice.user.exceptions.NotFoundException;
+import com.microservice.user.model.dtos.ScouterDTO;
+import com.microservice.user.model.dtos.user.request.UserRequestDTO;
+import com.microservice.user.model.dtos.user.response.UserResponseDTO;
+import com.microservice.user.model.events_kafka.UserEventKafka;
+import com.microservice.user.services.interfaces.IKafkaEventsService;
 import com.microservice.user.services.interfaces.IKeycloakService;
 import com.microservice.user.utils.KeycloakProvider;
 import jakarta.ws.rs.core.Response;
@@ -14,34 +20,99 @@ import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class KeycloakService implements IKeycloakService {
 
-    //TODOS LOS USUARIOS DE KEYCLOAK
+    @Autowired
+    private IKafkaEventsService kafkaService;
+
+    /**
+     * find all users of the app
+     *
+     * @return list of UserDTO
+     */
     @Override
-    public List<UserRepresentation> findAllUsers() {
-        return KeycloakProvider.getRealmResource()
-                .users().list();
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> findAllUsers() {
+
+        List<UserRepresentation> usersKeycloak = KeycloakProvider.getRealmResource().users().list();
+        List<UserResponseDTO> usersDTO = new ArrayList<>();
+        if(!usersKeycloak.isEmpty()) {
+            usersDTO = usersKeycloak.stream().map(user ->
+                    new UserResponseDTO(
+                            user.getId(),
+                            user.getUsername(),
+                            user.getLastName(),
+                            user.getFirstName(),
+                            user.getRealmRoles().stream().toList(),
+                            user.isEnabled(),
+                            1L)
+            ).collect(Collectors.toList());
+        }
+
+        return usersDTO;
     }
 
-    //BUSCAR USUARIO POR SU USERNAME
+    /**
+     * find user by username
+     *
+     * @param username
+     * @return UserResponseDTO
+     * @throws NotFoundException if a user with the username is not found
+     * @throws ConflictKeycloakException if an error occurs with keycloak
+     */
     @Override
-    public List<UserRepresentation> searchUserByUsername(String username) {
-        return KeycloakProvider.getRealmResource()
-                .users().searchByUsername(username, true);
+    @Transactional(readOnly = true)
+    public UserResponseDTO searchUserByUsername(String username) {
+        List<UserRepresentation> usersKeycloak = new ArrayList<>();
+        try {
+            usersKeycloak = KeycloakProvider.getRealmResource().users()
+                    .searchByUsername(username, true);
+        }
+        catch (Exception ex) {
+            throw new ConflictKeycloakException(ex.getMessage());
+        }
+        List<UserResponseDTO> usersDTO = new ArrayList<>();
+        if(!usersKeycloak.isEmpty()) {
+            usersDTO = usersKeycloak.stream().map(user ->
+                    new UserResponseDTO(
+                            user.getId(),
+                            user.getUsername(),
+                            user.getLastName(),
+                            user.getFirstName(),
+                            user.getRealmRoles().stream().toList(),
+                            user.isEnabled(),
+                            1L)
+            ).collect(Collectors.toList());
+            //return user in first position, the only one
+            return usersDTO.get(0);
+        }
+        throw new NotFoundException("User","username",username);
+
     }
 
-    //CREAR UN NUEVO USUARIO EN KEYCLOAK
+    /**
+     * create a user
+     *
+     * @param user
+     * @return user creation status
+     * @throws ConflictExistException if a user with the username already exists
+     */
     @Override
-    public ResponseEntity<?> createUser(UserRequestKCDTO user) {
+    @Transactional
+    public ResponseEntity<?> createUser(UserRequestDTO user) {
 
         int status = 0;
         UsersResource usersResource = KeycloakProvider.getUserResource();
@@ -53,91 +124,115 @@ public class KeycloakService implements IKeycloakService {
         userRepresentation.setUsername(user.getUsername());
         userRepresentation.setEmailVerified(true);
         userRepresentation.setEnabled(true);
-
+        //create a user and get the status
         Response response = usersResource.create(userRepresentation);
         status = response.getStatus();
 
-        //consulto si se creo el usuario
+        //ask if the user was created (201 = created, 400 = user already created, 5xx = error server)
         if(status == 201) {
-            //busco el usuario que esta al final de la url
+            //get userId which is at the end of the path
             String path = response.getLocation().getPath();
             String userId = path.substring(path.lastIndexOf("/") + 1);
 
-            //seteo password
-            CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
-            credentialRepresentation.setTemporary(false);
-            credentialRepresentation.setType(OAuth2Constants.PASSWORD);
-            credentialRepresentation.setValue(user.getPassword());
+            //kafkaEvent-----------------------------------------------------------------------------------
+            this.kafkaService.emitKafkaEvent(new UserEventKafka("create",
+                    new ScouterDTO(userId, userRepresentation.getLastName(), userRepresentation.getFirstName()))
+            );
+            //---------------------------------------------------------------------------------------------
 
-            usersResource.get(userId).resetPassword(credentialRepresentation);
+            try {
+                //set password
+                CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
+                credentialRepresentation.setTemporary(false);
+                credentialRepresentation.setType(OAuth2Constants.PASSWORD);
+                credentialRepresentation.setValue(user.getPassword());
+                usersResource.get(userId).resetPassword(credentialRepresentation);
 
-            //seteo roles
-            RealmResource realmResource = KeycloakProvider.getRealmResource();
+                //set roles
+                RealmResource realmResource = KeycloakProvider.getRealmResource();
+                List<RoleRepresentation> roleRepresentations = null;
 
-            List<RoleRepresentation> roleRepresentations = null;
+                //if the request came without roles, set role "USER" by default
+                if(user.getRoles() == null || user.getRoles().isEmpty()) {
+                    roleRepresentations = List.of(realmResource.roles().get("USER").toRepresentation());
+                }
+                else {
+                    roleRepresentations = realmResource.roles()
+                            .list()
+                            .stream()
+                            .filter(role -> user.getRoles()
+                                    .stream()
+                                    .anyMatch(roleName -> roleName.equalsIgnoreCase(role.getName())))
+                            .toList();
+                }
+                //add roles
+                realmResource.users()
+                        .get(userId)
+                        .roles()
+                        .realmLevel()
+                        .add(roleRepresentations);
 
-            for (RoleRepresentation r:realmResource.roles().list()) {
-                log.info(r.getName());
+                return new ResponseEntity<>(userId, HttpStatus.CREATED);
             }
-
-            //si no traje roles asigno role de usuario por default
-            if(user.getRoles() == null || user.getRoles().isEmpty()) {
-                roleRepresentations = List.of(realmResource.roles().get("USER").toRepresentation());
+            catch (Exception ex) {
+                throw new ConflictKeycloakException(ex.getMessage());
             }
-            else {
-                //obtengo los roles de keycloak y busco por cada uno cual de los roles que traje en el request coincide,
-                // todos los roles del request que coincidan con los roles de keycloak los guardo
-                //recorro la lista de roles de keycloak, por cada uno recorro la lista de roles del requesst,
-                // role del request que haga match con el role de keycloak se guarda
-                roleRepresentations = realmResource.roles()
-                        .list()
-                        .stream()
-                        .filter(role -> user.getRoles()
-                                .stream()
-                                .anyMatch(roleName -> roleName.equalsIgnoreCase(role.getName())))
-                        .toList();
-            }
-            //agrego roles
-            realmResource.users()
-                    .get(userId)
-                    .roles()
-                    .realmLevel()
-                    .add(roleRepresentations);
-
-            return new ResponseEntity<>(true, HttpStatus.CREATED);
-
-        } else if (status == 400) {
-            //ya existe el usuairo
-            log.error("User exist already");
+        }
+        else if (status == 400) //the user already exists (is not perfect)
             throw new ConflictExistException("User","username",user.getUsername());
-
-        }
-        else {
-            //error del server
-            log.error("error creando el usuario");
-            throw new ConflictPersistException("create","User","username", user.getUsername(), "unknow");
-        }
+        else //keycloak error
+            throw new ConflictKeycloakException(response.getStatusInfo().toString());
 
     }
 
-    //BORRAR UN USUARIO DE KEYCLOAK
+    /**
+     * delete a user by id
+     *
+     * @param userId
+     * @return user elimination status
+     * @throws ConflictKeycloakException if an error occurs with keycloak
+     */
     @Override
+    @Transactional
     public ResponseEntity<?> deleteUser(String userId) {
-        KeycloakProvider.getUserResource().get(userId).remove();
-        return new ResponseEntity<>(true,HttpStatus.OK);
+        try {
+            UserRepresentation userRepresentation = KeycloakProvider.getUserResource().get(userId).toRepresentation();
+            KeycloakProvider.getUserResource().get(userId).remove();
+
+            //kafkaEvent-----------------------------------------------------------------------------------
+            this.kafkaService.emitKafkaEvent(new UserEventKafka("delete",
+                    new ScouterDTO(userId, userRepresentation.getLastName(), userRepresentation.getFirstName()))
+            );
+            //---------------------------------------------------------------------------------------------
+
+            return new ResponseEntity<>(true,HttpStatus.OK);
+        }
+        catch (Exception ex) {
+            throw new ConflictKeycloakException(ex.getMessage());
+        }
     }
 
-    //ACTUALIZAR UN USUARIO DE KEYCLOAK
+    /**
+     * update a user by id
+     *
+     * @param userId
+     * @param user
+     * @return user editing status
+     * @throws ConflictKeycloakException if an error occurs with keycloak
+     */
     @Override
-    public ResponseEntity<?> updateUser(String userId, UserRequestKCDTO user) {
+    @Transactional
+    public ResponseEntity<?> updateUser(String userId, UserRequestDTO user) {
 
-        //cambio password
+        //THE USERNAME CANNOT BE UPDATED!!!
+
+        //update password
         CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
         credentialRepresentation.setTemporary(false);
         credentialRepresentation.setType(OAuth2Constants.PASSWORD);
         credentialRepresentation.setValue(user.getPassword());
 
-        //modifico user
+        //update user data
         UserRepresentation userRepresentation = new UserRepresentation();
         userRepresentation.setFirstName(user.getName());
         userRepresentation.setLastName(user.getSurname());
@@ -146,12 +241,23 @@ public class KeycloakService implements IKeycloakService {
         userRepresentation.setEmailVerified(true);
         userRepresentation.setEnabled(true);
 
-        //seteo credenciales
+        //set credentials
         userRepresentation.setCredentials(Collections.singletonList(credentialRepresentation));
 
-        UserResource userResource = KeycloakProvider.getUserResource().get(userId);
-        userResource.update(userRepresentation);
+        try {
+            UserResource userResource = KeycloakProvider.getUserResource().get(userId);
+            userResource.update(userRepresentation);
 
-        return new ResponseEntity<>(true,HttpStatus.ACCEPTED);
+            //kafkaEvent-----------------------------------------------------------------------------------
+            this.kafkaService.emitKafkaEvent(new UserEventKafka("update",
+                    new ScouterDTO(userId, userRepresentation.getLastName(), userRepresentation.getFirstName()))
+            );
+            //---------------------------------------------------------------------------------------------
+
+            return new ResponseEntity<>(true,HttpStatus.ACCEPTED);
+        }
+        catch (Exception ex) {
+            throw new ConflictKeycloakException(ex.getMessage());
+        }
     }
 }

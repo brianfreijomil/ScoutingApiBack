@@ -1,5 +1,6 @@
 package com.microservice.user.services.implement;
 
+import com.microservice.user.services.interfaces.IKafkaEventsService;
 import com.microservice.user.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,19 +9,21 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class KafkaEventsService {
+public class KafkaEventsService implements IKafkaEventsService {
 
     @Autowired
     private KafkaTemplate<String,String> kafkaTemplate;
 
-    public void emitKafkaEvent(String topicName, Object event) {
-        //recibo un nombre para el topic y el evento a emitir
+    @Override
+    public void emitKafkaEvent(Object event) {
+
+        String topicName = "scouter-management-topic";
+
         try {
             this.kafkaTemplate.send(topicName, JsonUtils.toJson(event));
         }
         catch (Exception ex) {
-            //si hay un error sale por consola
-            log.info("Error due to: {}",ex.getMessage());
+            log.info("Error : {}",ex.getMessage());
         }
     }
 

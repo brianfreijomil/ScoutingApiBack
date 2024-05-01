@@ -1,6 +1,6 @@
 package com.microservice.calendar.model.dtos.events.request;
 
-import com.microservice.calendar.model.entities.Scouter;
+import com.microservice.calendar.model.dtos.scouter.request.ScouterRequestDTO;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -30,5 +30,6 @@ public class EventCalendarRequestDTO {
     @NotNull(message = "teamId cannot be null")
     private Long teamId;
     @NotNull(message = "scouters cannot be null")
-    private List<Scouter> scouters;
+    @NotEmpty(message = "scouters cannot be empty")
+    private List<ScouterRequestDTO> scouters;
 }

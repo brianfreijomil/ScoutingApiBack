@@ -83,7 +83,7 @@ public class Player {
     @Column(name = "team_id")
     private Long teamId;
 
-    public Player(PlayerRequestDTO requestDTO) {
+    public Player(PlayerRequestDTO requestDTO, Scouter scouter) {
         this.dni = requestDTO.getDni();
         this.surname = requestDTO.getSurname();
         this.name = requestDTO.getName();
@@ -97,7 +97,7 @@ public class Player {
         this.secondPosition = requestDTO.getSecondPosition();
         this.valoration = requestDTO.getValoration();
         this.characteristics = requestDTO.getCharacteristics();
-        this.scouter = requestDTO.getScouter();
+        this.scouter = scouter;
         this.dateSeen = requestDTO.getDateSeen();
         this.divisionSeen = requestDTO.getDivisionSeen();
         this.teamSeen = requestDTO.getTeamSeen();

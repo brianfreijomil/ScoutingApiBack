@@ -1,17 +1,17 @@
 package com.microservice.user.services.interfaces;
 
-import com.microservice.user.model.dtos.user.request.UserRequestKCDTO;
-import org.keycloak.representations.idm.UserRepresentation;
+import com.microservice.user.model.dtos.user.request.UserRequestDTO;
+import com.microservice.user.model.dtos.user.response.UserResponseDTO;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface IKeycloakService {
 
-    List<UserRepresentation> findAllUsers();
-    List<UserRepresentation> searchUserByUsername(String username);
-    ResponseEntity<?> createUser(UserRequestKCDTO user);
+    List<UserResponseDTO> findAllUsers();
+    UserResponseDTO searchUserByUsername(String username);
+    ResponseEntity<?> createUser(UserRequestDTO user);
     ResponseEntity<?> deleteUser(String userId);
-    ResponseEntity<?> updateUser(String userId, UserRequestKCDTO user);
+    ResponseEntity<?> updateUser(String userId, UserRequestDTO user);
 
 }

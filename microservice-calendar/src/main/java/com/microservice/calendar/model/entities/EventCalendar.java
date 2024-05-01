@@ -39,7 +39,6 @@ public class EventCalendar {
         this.dateEnd = requestDTO.getDateEnd();
         this.description = requestDTO.getDescription();
         this.teamId = requestDTO.getTeamId();
-        this.scouters = requestDTO.getScouters();
     }
 
     public void addScouterToEvent(Scouter scouter) {
