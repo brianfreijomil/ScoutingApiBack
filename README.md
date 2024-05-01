@@ -25,3 +25,5 @@ RECORDATORIOS :
 * respuesta de error 500 en create user
 * preguntar si el usuario existe antes de realizar la accion? en update y delete de usuario
 * borrado de scouter en microservicios player y calendar (critico)
+* acoplar ms-team y ms-user (tiene poco sentido tanta estructura para la entidad Team, 
+  * y conviene que este en el mismo lugar que usuarios para mapear los teamId y subscriptionStatus)

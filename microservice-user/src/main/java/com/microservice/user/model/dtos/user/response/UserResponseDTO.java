@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -15,8 +14,7 @@ public class UserResponseDTO {
     private String username;
     private String lastname;
     private String firstname;
-    private List<String> roles;
     private Boolean enable;
-    private Long teamId;
+    private String teamId;
 
 }

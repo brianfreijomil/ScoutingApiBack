@@ -21,8 +21,6 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private IUserService userService;
-    @Autowired
     private IKeycloakService keycloakService;
 
     @GetMapping("")

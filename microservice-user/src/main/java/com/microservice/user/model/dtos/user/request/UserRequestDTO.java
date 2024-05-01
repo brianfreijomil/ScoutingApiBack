@@ -30,5 +30,8 @@ public class UserRequestDTO {
     @NotEmpty(message = "password cannot be empty")
     private String password;
     private Set<String> roles;
+    @NotNull(message = "teamId cannot be null")
+    private Long teamId;
+
 
 }

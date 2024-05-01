@@ -26,9 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,9 +54,8 @@ public class KeycloakService implements IKeycloakService {
                             user.getUsername(),
                             user.getLastName(),
                             user.getFirstName(),
-                            user.getRealmRoles().stream().toList(),
                             user.isEnabled(),
-                            1L)
+                            user.getAttributes().get("team-id").get(0))
             ).collect(Collectors.toList());
         }
 
@@ -76,6 +73,7 @@ public class KeycloakService implements IKeycloakService {
     @Override
     @Transactional(readOnly = true)
     public UserResponseDTO searchUserByUsername(String username) {
+
         List<UserRepresentation> usersKeycloak = new ArrayList<>();
         try {
             usersKeycloak = KeycloakProvider.getRealmResource().users()
@@ -92,15 +90,13 @@ public class KeycloakService implements IKeycloakService {
                             user.getUsername(),
                             user.getLastName(),
                             user.getFirstName(),
-                            user.getRealmRoles().stream().toList(),
                             user.isEnabled(),
-                            1L)
+                            user.getAttributes().get("team-id").get(0))
             ).collect(Collectors.toList());
             //return user in first position, the only one
             return usersDTO.get(0);
         }
         throw new NotFoundException("User","username",username);
-
     }
 
     /**
@@ -117,6 +113,12 @@ public class KeycloakService implements IKeycloakService {
         int status = 0;
         UsersResource usersResource = KeycloakProvider.getUserResource();
 
+        //attributes needs a map (key = string, value = list<String>)
+        Map<String,List<String>> attributes = new HashMap<>();
+        List<String> values = new ArrayList<>();
+        values.add(user.getTeamId().toString());
+        attributes.put("team-id",values);
+
         UserRepresentation userRepresentation = new UserRepresentation();
         userRepresentation.setFirstName(user.getName());
         userRepresentation.setLastName(user.getSurname());
@@ -124,6 +126,7 @@ public class KeycloakService implements IKeycloakService {
         userRepresentation.setUsername(user.getUsername());
         userRepresentation.setEmailVerified(true);
         userRepresentation.setEnabled(true);
+        userRepresentation.setAttributes(attributes);
         //create a user and get the status
         Response response = usersResource.create(userRepresentation);
         status = response.getStatus();
@@ -178,7 +181,7 @@ public class KeycloakService implements IKeycloakService {
                 throw new ConflictKeycloakException(ex.getMessage());
             }
         }
-        else if (status == 400) //the user already exists (is not perfect)
+        else if (status == 409) //the user already exists (is not perfect)
             throw new ConflictExistException("User","username",user.getUsername());
         else //keycloak error
             throw new ConflictKeycloakException(response.getStatusInfo().toString());

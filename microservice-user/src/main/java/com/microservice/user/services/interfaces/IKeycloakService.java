@@ -2,6 +2,7 @@ package com.microservice.user.services.interfaces;
 
 import com.microservice.user.model.dtos.user.request.UserRequestDTO;
 import com.microservice.user.model.dtos.user.response.UserResponseDTO;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
