@@ -22,7 +22,6 @@
         <module>microservice-eureka</module>
         <module>microservice-config</module>
         <module>microservice-player</module>
-        <module>microservice-team</module>
         <module>microservice-calendar</module>
         <module>microservice-recruitment-stats</module>
         <module>microservice-user</module>

@@ -53,13 +53,16 @@ public class UserController {
         return this.keycloakService.deleteUser(userId);
     }
 
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE') or hasRole('ADMIN_SCOUTING_ROLE')")
+    public List<UserResponseDTO> getAllUsersByTeamId(@NotNull Long teamId) {
+        return this.keycloakService.findAllUsersByTeamId(teamId);
+    }
+
     /*
     * ALL METHODS MUST EXIST
     *
-    * @GetMapping("/by_team/{teamId}")
-    public List<UserResponseDTO> getAllUsersByTeamId(@PathVariable Long teamId) {
-        return this.userService.getAllByTeamId(teamId);
-    }
+    *
 
     @PostMapping("/log-in")
     public UserResponseDTO startSession(@RequestBody @Valid LoginDTO loginDTO) {

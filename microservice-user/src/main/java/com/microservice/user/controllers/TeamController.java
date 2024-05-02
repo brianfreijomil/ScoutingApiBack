@@ -1,20 +1,20 @@
-package com.microservice.team.controllers;
+package com.microservice.user.controllers;
 
-import com.microservice.team.dtos.team.request.TeamRequestDTO;
-import com.microservice.team.dtos.team.request.TeamSubscriptionStatusDTO;
-import com.microservice.team.dtos.team.response.TeamResponseDTO;
-import com.microservice.team.entities.Team;
-import com.microservice.team.http.response.PlayersByTeamResponse;
-import com.microservice.team.services.interfaces.ITeamService;
+import com.microservice.user.model.dtos.team.request.TeamRequestDTO;
+import com.microservice.user.model.dtos.team.response.TeamResponseDTO;
+import com.microservice.user.services.interfaces.ITeamService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/teams")
+@PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE')")
 public class TeamController {
 
     @Autowired
@@ -30,10 +30,12 @@ public class TeamController {
         return this.teamService.getById(id);
     }
 
+    /*
     @GetMapping("/{id}/players")
     public PlayersByTeamResponse getAllPlayersByTeamId(@PathVariable Long id) {
         return this.teamService.getPlayersByTeamId(id);
     }
+     */
 
     @PostMapping("")
     public ResponseEntity<?> createTeam(@RequestBody @Valid TeamRequestDTO team) {
@@ -46,7 +48,7 @@ public class TeamController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateTeamSubscriptionStatus(@RequestBody @Valid TeamSubscriptionStatusDTO subscriptionStatus, @PathVariable Long id) {
+    public ResponseEntity<?> updateTeamSubscriptionStatus(@NotNull Boolean subscriptionStatus, @PathVariable Long id) {
         return this.teamService.updateTeamSubscriptionStatus(subscriptionStatus,id);
     }
 

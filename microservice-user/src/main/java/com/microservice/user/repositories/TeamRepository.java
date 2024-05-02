@@ -1,6 +1,6 @@
-package com.microservice.team.repositories;
+package com.microservice.user.repositories;
 
-import com.microservice.team.entities.Team;
+import com.microservice.user.model.entities.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

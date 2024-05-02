@@ -1,6 +1,6 @@
-package com.microservice.team.entities;
+package com.microservice.user.model.entities;
 
-import com.microservice.team.dtos.team.request.TeamRequestDTO;
+import com.microservice.user.model.dtos.team.request.TeamRequestDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

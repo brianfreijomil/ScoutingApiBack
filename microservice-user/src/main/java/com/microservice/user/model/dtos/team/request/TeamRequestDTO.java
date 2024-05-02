@@ -1,4 +1,4 @@
-package com.microservice.team.dtos.team.request;
+package com.microservice.user.model.dtos.team.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

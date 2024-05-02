@@ -2,9 +2,8 @@ package com.microservice.user.services.implement;
 
 import com.microservice.user.exceptions.ConflictExistException;
 import com.microservice.user.exceptions.ConflictKeycloakException;
-import com.microservice.user.exceptions.ConflictPersistException;
 import com.microservice.user.exceptions.NotFoundException;
-import com.microservice.user.model.dtos.ScouterDTO;
+import com.microservice.user.model.dtos.user.ScouterDTO;
 import com.microservice.user.model.dtos.user.request.UserRequestDTO;
 import com.microservice.user.model.dtos.user.response.UserResponseDTO;
 import com.microservice.user.model.events_kafka.UserEventKafka;
@@ -60,6 +59,35 @@ public class KeycloakService implements IKeycloakService {
         }
 
         return usersDTO;
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> findAllUsersByTeamId(Long teamId) {
+
+        log.info("teamId: " + teamId.toString());
+
+        String attributeKey = "team-id";
+
+        List<UserRepresentation> usersKeycloak = KeycloakProvider.getRealmResource().users().list();
+
+        return usersKeycloak.stream()
+                .filter(user -> {
+                    List<String> attributeValues = user.getAttributes().get(attributeKey);
+                    return attributeValues != null && attributeValues.contains(teamId.toString());
+                })
+                .map(user -> {
+                    UserResponseDTO dto = new UserResponseDTO();
+                    dto.setId(user.getId());
+                    dto.setUsername(user.getUsername());
+                    dto.setFirstname(user.getFirstName());
+                    dto.setLastname(user.getLastName());
+                    dto.setEnable(user.isEnabled());
+                    dto.setTeamId(teamId.toString()); // Set the teamId from the filter criteria
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     /**

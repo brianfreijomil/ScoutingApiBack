@@ -1,17 +1,13 @@
-package com.microservice.team.services.implement;
+package com.microservice.user.services.implement;
 
-import com.microservice.team.client.PlayerClient;
-import com.microservice.team.dtos.player.PlayerDTO;
-import com.microservice.team.dtos.team.request.TeamRequestDTO;
-import com.microservice.team.dtos.team.request.TeamSubscriptionStatusDTO;
-import com.microservice.team.dtos.team.response.TeamResponseDTO;
-import com.microservice.team.entities.Team;
-import com.microservice.team.exceptions.ConflictExistException;
-import com.microservice.team.exceptions.ConflictPersistException;
-import com.microservice.team.exceptions.NotFoundException;
-import com.microservice.team.http.response.PlayersByTeamResponse;
-import com.microservice.team.repositories.TeamRepository;
-import com.microservice.team.services.interfaces.ITeamService;
+import com.microservice.user.exceptions.ConflictExistException;
+import com.microservice.user.exceptions.ConflictPersistException;
+import com.microservice.user.exceptions.NotFoundException;
+import com.microservice.user.model.dtos.team.request.TeamRequestDTO;
+import com.microservice.user.model.dtos.team.response.TeamResponseDTO;
+import com.microservice.user.model.entities.Team;
+import com.microservice.user.repositories.TeamRepository;
+import com.microservice.user.services.interfaces.ITeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +23,8 @@ public class TeamService implements ITeamService {
 
     @Autowired
     private TeamRepository teamRepository;
-    @Autowired
-    private PlayerClient playerClient;
+    //@Autowired
+    //private PlayerClient playerClient;
 
     @Override
     @Transactional(readOnly = true)
@@ -52,7 +48,7 @@ public class TeamService implements ITeamService {
     @Override
     @Transactional
     public ResponseEntity<?> create(TeamRequestDTO team) {
-        if(this.teamRepository.existsByEmail(team.getEmail())) {
+        if(!this.teamRepository.existsByEmail(team.getEmail())) {
             try {
                 this.teamRepository.save(new Team(team));
                 return new ResponseEntity<>(true,HttpStatus.CREATED);
@@ -88,11 +84,11 @@ public class TeamService implements ITeamService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> updateTeamSubscriptionStatus(TeamSubscriptionStatusDTO subscriptionStatusDTO, Long id) {
+    public ResponseEntity<?> updateTeamSubscriptionStatus(Boolean subscriptionStatusDTO, Long id) {
         Optional<Team> teamExisting = this.teamRepository.findById(id);
         if(!teamExisting.isEmpty()) {
             try {
-                teamExisting.get().setSubscribed(subscriptionStatusDTO.getSubscribed());
+                teamExisting.get().setSubscribed(subscriptionStatusDTO);
 
                 //si el nuevo estado es true, habilito a los usuarios del team para utilizar la app
                 //si el nuevo estado es false, deshabilito a los usuarios del team para utilizar la app
@@ -128,6 +124,7 @@ public class TeamService implements ITeamService {
 
 
     // -------------------- EJEMPLO USANDO FEIGN CLIENT ------------------------ //
+    /*
     @Override
     @Transactional
     public PlayersByTeamResponse getPlayersByTeamId(Long id) {
@@ -142,4 +139,6 @@ public class TeamService implements ITeamService {
                 .playerDTOList(playerDTOList)
                 .build();
     }
+
+     */
 }

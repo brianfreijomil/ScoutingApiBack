@@ -10,6 +10,7 @@ import java.util.List;
 public interface IKeycloakService {
 
     List<UserResponseDTO> findAllUsers();
+    List<UserResponseDTO> findAllUsersByTeamId(Long teamId);
     UserResponseDTO searchUserByUsername(String username);
     ResponseEntity<?> createUser(UserRequestDTO user);
     ResponseEntity<?> deleteUser(String userId);

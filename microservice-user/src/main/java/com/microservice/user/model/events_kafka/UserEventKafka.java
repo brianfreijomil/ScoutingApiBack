@@ -1,6 +1,6 @@
 package com.microservice.user.model.events_kafka;
 
-import com.microservice.user.model.dtos.ScouterDTO;
+import com.microservice.user.model.dtos.user.ScouterDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

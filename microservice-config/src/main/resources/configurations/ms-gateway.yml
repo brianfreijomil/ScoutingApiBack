@@ -40,10 +40,10 @@ spring:
           uri: http://localhost:8093
           predicates:
             - Path=/api/users/**
-        - id: roles
+        - id: teams
           uri: http://localhost:8093
           predicates:
-            - Path=/api/roles/**
+            - Path=/api/teams/**
         - id: calendar
           uri: http://localhost:8091
           predicates:

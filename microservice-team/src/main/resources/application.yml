@@ -1,7 +1,0 @@
-
-spring:
-  application:
-    name: ms-team
-  config:
-    import: optional:configserver:http://localhost:8889
-

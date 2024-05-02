@@ -1,11 +1,6 @@
-package com.microservice.team.dtos.team.response;
+package com.microservice.user.model.dtos.team.response;
 
-import com.microservice.team.dtos.team.request.TeamRequestDTO;
-import com.microservice.team.entities.Team;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.microservice.user.model.entities.Team;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
