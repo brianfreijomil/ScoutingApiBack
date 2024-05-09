@@ -1,5 +1,6 @@
 package com.microservice.user.controllers;
 
+import com.microservice.user.model.dtos.user.SessionDTO;
 import com.microservice.user.model.dtos.user.request.LoginDTO;
 import com.microservice.user.model.dtos.user.request.UserRequestDTO;
 import com.microservice.user.model.dtos.user.response.UserResponseDTO;
@@ -23,15 +24,20 @@ public class UserController {
     @Autowired
     private IKeycloakService keycloakService;
 
+    @PostMapping("/log-in")
+    public ResponseEntity<SessionDTO> startSession(@RequestBody @Valid LoginDTO loginDTO) {
+        return this.keycloakService.startSession(loginDTO);
+    }
+
     @GetMapping("")
     @PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE')")
-    public List<UserResponseDTO> getAllUsers() {
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
         return this.keycloakService.findAllUsers();
     }
 
     @GetMapping("/{username}")
     @PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE') or hasRole('ADMIN_SCOUTING_ROLE')")
-    public UserResponseDTO getUserByUsername(@PathVariable @NotNull @NotEmpty String username) {
+    public ResponseEntity<UserResponseDTO> getUserByUsername(@PathVariable @NotNull @NotEmpty String username) {
         return this.keycloakService.searchUserByUsername(username);
     }
 
@@ -55,7 +61,7 @@ public class UserController {
 
     @GetMapping("/search")
     @PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE') or hasRole('ADMIN_SCOUTING_ROLE')")
-    public List<UserResponseDTO> getAllUsersByTeamId(@NotNull Long teamId) {
+    public ResponseEntity<List<UserResponseDTO>> getAllUsersByTeamId(@NotNull Long teamId) {
         return this.keycloakService.findAllUsersByTeamId(teamId);
     }
 
@@ -63,11 +69,6 @@ public class UserController {
     * ALL METHODS MUST EXIST
     *
     *
-
-    @PostMapping("/log-in")
-    public UserResponseDTO startSession(@RequestBody @Valid LoginDTO loginDTO) {
-        return this.userService.getByCredentials(loginDTO);
-    }
 
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateUserStatus(Boolean status, @PathVariable Long id) {

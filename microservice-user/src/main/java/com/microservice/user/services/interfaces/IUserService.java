@@ -9,8 +9,8 @@ import java.util.List;
 
 public interface IUserService {
 
-    List<UserResponseDTO> getAllByTeamId(Long teamId);
-    UserResponseDTO getByCredentials(LoginDTO loginDTO);
+    ResponseEntity<List<UserResponseDTO>> getAllByTeamId(Long teamId);
+    ResponseEntity<UserResponseDTO> getByCredentials(LoginDTO loginDTO);
     ResponseEntity<?> updateStatus(Boolean status, Long id);
     ResponseEntity<?> updateAllUsersSubscriptionStatus(Boolean status, Long teamId);
 

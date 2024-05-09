@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface ICalendarService {
 
-    List<EventCalendarResponseDTO> getAllbyTeamId(Long teamId);
+    ResponseEntity<List<EventCalendarResponseDTO>> getAllbyTeamId(Long teamId);
 
-    EventCalendarResponseDTO getById(Long eventId);
+    ResponseEntity<EventCalendarResponseDTO> getById(Long eventId);
 
     ResponseEntity<?> createEvent(EventCalendarRequestDTO event);
 

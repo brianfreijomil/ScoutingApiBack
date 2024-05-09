@@ -4,9 +4,12 @@ import com.microservice.user.exceptions.ConflictExistException;
 import com.microservice.user.exceptions.ConflictKeycloakException;
 import com.microservice.user.exceptions.NotFoundException;
 import com.microservice.user.model.dtos.user.ScouterDTO;
+import com.microservice.user.model.dtos.user.SessionDTO;
+import com.microservice.user.model.dtos.user.request.LoginDTO;
 import com.microservice.user.model.dtos.user.request.UserRequestDTO;
 import com.microservice.user.model.dtos.user.response.UserResponseDTO;
 import com.microservice.user.model.events_kafka.UserEventKafka;
+import com.microservice.user.repositories.TeamRepository;
 import com.microservice.user.services.interfaces.IKafkaEventsService;
 import com.microservice.user.services.interfaces.IKeycloakService;
 import com.microservice.user.utils.KeycloakProvider;
@@ -34,6 +37,14 @@ public class KeycloakService implements IKeycloakService {
 
     @Autowired
     private IKafkaEventsService kafkaService;
+    @Autowired
+    private TeamRepository teamRepository;
+
+
+    @Override
+    public ResponseEntity<SessionDTO> startSession(LoginDTO loginUser) {
+        return null;
+    }
 
     /**
      * find all users of the app
@@ -42,8 +53,8 @@ public class KeycloakService implements IKeycloakService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<UserResponseDTO> findAllUsers() {
-
+    public ResponseEntity<List<UserResponseDTO>> findAllUsers() {
+        String attributeKey = "team-id";
         List<UserRepresentation> usersKeycloak = KeycloakProvider.getRealmResource().users().list();
         List<UserResponseDTO> usersDTO = new ArrayList<>();
         if(!usersKeycloak.isEmpty()) {
@@ -54,40 +65,48 @@ public class KeycloakService implements IKeycloakService {
                             user.getLastName(),
                             user.getFirstName(),
                             user.isEnabled(),
-                            user.getAttributes().get("team-id").get(0))
+                            user.getAttributes().get(attributeKey).get(0))
             ).collect(Collectors.toList());
         }
 
-        return usersDTO;
+        return new ResponseEntity<>(usersDTO, HttpStatus.OK);
     }
 
-
+    /**
+     * get all users filter by teamId (attribute of users)
+     *
+     * @param teamId
+     * @return list of users DTO
+     * @throws NotFoundException if a team with the teamId is not found
+     */
     @Override
     @Transactional(readOnly = true)
-    public List<UserResponseDTO> findAllUsersByTeamId(Long teamId) {
+    public ResponseEntity<List<UserResponseDTO>> findAllUsersByTeamId(Long teamId) {
+        if(this.teamRepository.existsById(teamId)) {
+            String attributeKey = "team-id";
 
-        log.info("teamId: " + teamId.toString());
+            List<UserRepresentation> usersKeycloak = KeycloakProvider.getRealmResource().users().list();
 
-        String attributeKey = "team-id";
+            List<UserResponseDTO> userList = usersKeycloak.stream()
+                    .filter(user -> {
+                        List<String> attributeValues = user.getAttributes().get(attributeKey);
+                        return attributeValues != null && attributeValues.contains(teamId.toString());
+                    })
+                    .map(user -> {
+                        UserResponseDTO dto = new UserResponseDTO();
+                        dto.setId(user.getId());
+                        dto.setUsername(user.getUsername());
+                        dto.setFirstname(user.getFirstName());
+                        dto.setLastname(user.getLastName());
+                        dto.setEnable(user.isEnabled());
+                        dto.setTeamId(teamId.toString()); // Set the teamId from the filter criteria
+                        return dto;
+                    })
+                    .collect(Collectors.toList());
 
-        List<UserRepresentation> usersKeycloak = KeycloakProvider.getRealmResource().users().list();
-
-        return usersKeycloak.stream()
-                .filter(user -> {
-                    List<String> attributeValues = user.getAttributes().get(attributeKey);
-                    return attributeValues != null && attributeValues.contains(teamId.toString());
-                })
-                .map(user -> {
-                    UserResponseDTO dto = new UserResponseDTO();
-                    dto.setId(user.getId());
-                    dto.setUsername(user.getUsername());
-                    dto.setFirstname(user.getFirstName());
-                    dto.setLastname(user.getLastName());
-                    dto.setEnable(user.isEnabled());
-                    dto.setTeamId(teamId.toString()); // Set the teamId from the filter criteria
-                    return dto;
-                })
-                .collect(Collectors.toList());
+            return new ResponseEntity<>(userList, HttpStatus.OK);
+        }
+        throw new NotFoundException("Team","ID",teamId.toString());
     }
 
     /**
@@ -100,7 +119,7 @@ public class KeycloakService implements IKeycloakService {
      */
     @Override
     @Transactional(readOnly = true)
-    public UserResponseDTO searchUserByUsername(String username) {
+    public ResponseEntity<UserResponseDTO> searchUserByUsername(String username) {
 
         List<UserRepresentation> usersKeycloak = new ArrayList<>();
         try {
@@ -122,7 +141,7 @@ public class KeycloakService implements IKeycloakService {
                             user.getAttributes().get("team-id").get(0))
             ).collect(Collectors.toList());
             //return user in first position, the only one
-            return usersDTO.get(0);
+            return new ResponseEntity<>(usersDTO.get(0), HttpStatus.OK);
         }
         throw new NotFoundException("User","username",username);
     }
@@ -137,7 +156,7 @@ public class KeycloakService implements IKeycloakService {
     @Override
     @Transactional
     public ResponseEntity<?> createUser(UserRequestDTO user) {
-
+        String attributeKey = "team-id";
         int status = 0;
         UsersResource usersResource = KeycloakProvider.getUserResource();
 
@@ -145,7 +164,7 @@ public class KeycloakService implements IKeycloakService {
         Map<String,List<String>> attributes = new HashMap<>();
         List<String> values = new ArrayList<>();
         values.add(user.getTeamId().toString());
-        attributes.put("team-id",values);
+        attributes.put(attributeKey,values);
 
         UserRepresentation userRepresentation = new UserRepresentation();
         userRepresentation.setFirstName(user.getName());

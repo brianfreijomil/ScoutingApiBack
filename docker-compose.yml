@@ -40,8 +40,9 @@ services:
   ### KEYCLOAK
   keycloak:
     container_name: keycloak
-    image: quay.io/keycloak/keycloak:21.0.2
-    command: [ "start-dev" ]
+    image: quay.io/keycloak/keycloak:24.0.3
+    command:
+      - "start-dev"
     ports:
       - 8181:8181
     expose:

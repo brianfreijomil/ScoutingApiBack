@@ -20,12 +20,12 @@ public class CalendarController {
     /* ----- Events Context ----- */
 
     @GetMapping("/events/{teamid}")
-    public List<EventCalendarResponseDTO> getAllEvents(@PathVariable Long teamId) {
+    public ResponseEntity<List<EventCalendarResponseDTO>> getAllEvents(@PathVariable Long teamId) {
         return this.calendarService.getAllbyTeamId(teamId);
     }
 
     @GetMapping("/events/{eventId}")
-    public EventCalendarResponseDTO getEventById(@PathVariable Long eventId) {
+    public ResponseEntity<EventCalendarResponseDTO> getEventById(@PathVariable Long eventId) {
         return this.calendarService.getById(eventId);
     }
 

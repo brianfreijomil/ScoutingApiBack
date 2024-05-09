@@ -42,8 +42,8 @@ public class PlayerService implements IPlayerService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PlayerSearchDTO> getAllByTeamId(Long teamId) {
-        return this.playerRepository.findAllByTeamId(teamId)
+    public ResponseEntity<List<PlayerSearchDTO>> getAllByTeamId(Long teamId) {
+        List<PlayerSearchDTO> playerList = this.playerRepository.findAllByTeamId(teamId)
                 .stream()
                 .map(player -> new PlayerSearchDTO(
                         player.getDni(),
@@ -53,11 +53,13 @@ public class PlayerService implements IPlayerService {
                         player.getStatus(),
                         player.getScouter()
                 )).collect(Collectors.toList());
+
+        return new ResponseEntity<>(playerList, HttpStatus.OK);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PlayerResponseDTO getById(Long dni) {
+    public ResponseEntity<PlayerResponseDTO> getById(Long dni) {
         //get player
         Player player = this.playerRepository.findByDni(dni);
         if(player != null) {
@@ -72,7 +74,10 @@ public class PlayerService implements IPlayerService {
                     .map(clinicReport -> new ClinicReportResponseDTO(clinicReport))
                     .collect(Collectors.toList());
 
-            return new PlayerResponseDTO(player,statsDTO,clinicHistoryDTO);
+            return new ResponseEntity<>(
+                    new PlayerResponseDTO(player,statsDTO,clinicHistoryDTO),
+                    HttpStatus.OK
+            );
         }
         throw new NotFoundException("Player","ID",dni.toString());
     }

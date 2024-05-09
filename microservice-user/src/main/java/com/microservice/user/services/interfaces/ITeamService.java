@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface ITeamService {
 
-    List<TeamResponseDTO> getAll();
+    ResponseEntity<List<TeamResponseDTO>> getAll();
 
-    TeamResponseDTO getById(Long id);
+    ResponseEntity<TeamResponseDTO> getById(Long id);
 
     ResponseEntity<?> create(TeamRequestDTO team);
 

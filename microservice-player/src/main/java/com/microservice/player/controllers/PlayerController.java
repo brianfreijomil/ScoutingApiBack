@@ -7,6 +7,8 @@ import com.microservice.player.model.dtos.player.response.PlayerSearchDTO;
 import com.microservice.player.model.dtos.scouter.request.ScouterRequestDTO;
 import com.microservice.player.services.interfaces.IPlayerService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +22,13 @@ public class PlayerController {
     @Autowired
     private IPlayerService playerService;
 
-    @GetMapping("/all/{teamId}")
-    public List<PlayerSearchDTO> getAllPlayersByTeamId(@PathVariable Long teamId) {
-        return this.playerService.getAllByTeamId(teamId);
+    @GetMapping("")
+    public ResponseEntity<List<PlayerSearchDTO>> getAllPlayersByTeamId(@NotNull @NotEmpty Long team_id ) {
+        return this.playerService.getAllByTeamId(team_id);
     }
 
     @GetMapping("/{id}")
-    public PlayerResponseDTO getPlayerById(@PathVariable Long id) {
+    public ResponseEntity<PlayerResponseDTO> getPlayerById(@PathVariable Long id) {
         return this.playerService.getById(id);
     }
 

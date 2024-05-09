@@ -11,9 +11,9 @@ import java.util.List;
 
 public interface IPlayerService {
 
-    List<PlayerSearchDTO> getAllByTeamId(Long teamId);
+    ResponseEntity<List<PlayerSearchDTO>> getAllByTeamId(Long teamId);
 
-    PlayerResponseDTO getById(Long id);
+    ResponseEntity<PlayerResponseDTO> getById(Long id);
 
     ResponseEntity<?> create(PlayerRequestDTO player);
 

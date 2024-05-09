@@ -34,19 +34,21 @@ public class CalendarService implements ICalendarService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<EventCalendarResponseDTO> getAllbyTeamId(Long teamId) {
-        return this.eventCalendarRepository.findAllByTeamId(teamId)
+    public ResponseEntity<List<EventCalendarResponseDTO>> getAllbyTeamId(Long teamId) {
+        List<EventCalendarResponseDTO> eventsList = this.eventCalendarRepository.findAllByTeamId(teamId)
                 .stream()
                 .map(event -> new EventCalendarResponseDTO(event))
                 .collect(Collectors.toList());
+
+        return new ResponseEntity<>(eventsList, HttpStatus.OK);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public EventCalendarResponseDTO getById(Long eventId) {
+    public ResponseEntity<EventCalendarResponseDTO> getById(Long eventId) {
         Optional<EventCalendar> event = this.eventCalendarRepository.findById(eventId);
         if(!event.isEmpty()) {
-            return new EventCalendarResponseDTO(event.get());
+            return new ResponseEntity<>(new EventCalendarResponseDTO(event.get()), HttpStatus.OK);
         }
         throw new NotFoundException("EventCalendar","ID",eventId.toString());
     }

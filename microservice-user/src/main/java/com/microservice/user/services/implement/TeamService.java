@@ -28,19 +28,21 @@ public class TeamService implements ITeamService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<TeamResponseDTO> getAll() {
-        return this.teamRepository.findAll()
+    public ResponseEntity<List<TeamResponseDTO>> getAll() {
+        List<TeamResponseDTO> teamList = this.teamRepository.findAll()
                 .stream()
                 .map(team -> new TeamResponseDTO(team))
                 .collect(Collectors.toList());
+
+        return new ResponseEntity<>(teamList, HttpStatus.OK);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public TeamResponseDTO getById(Long id) {
+    public ResponseEntity<TeamResponseDTO> getById(Long id) {
         Optional<Team> team = this.teamRepository.findById(id);
         if(!team.isEmpty()) {
-            return new TeamResponseDTO(team.get());
+            return new ResponseEntity<>(new TeamResponseDTO(team.get()), HttpStatus.OK);
         }
         throw new NotFoundException("Team","ID",id.toString());
     }
