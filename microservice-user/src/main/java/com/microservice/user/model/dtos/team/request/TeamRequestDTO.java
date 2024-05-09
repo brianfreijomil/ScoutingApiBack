@@ -13,7 +13,8 @@ import java.sql.Date;
 @NoArgsConstructor
 public class TeamRequestDTO {
 
-    //id can be null
+    @NotNull(message = "id cannot be null")
+    @NotEmpty(message = "id cannot be empty")
     private Long id;
 
     @NotNull(message = "name cannot be null")

@@ -19,6 +19,7 @@ public class EventCalendarResponseDTO {
     private Timestamp dateInit;
     private Timestamp dateEnd;
     private String description;
+    private Long teamId;
     private List<Scouter> scouters;
 
     public EventCalendarResponseDTO(EventCalendar event) {
@@ -27,6 +28,7 @@ public class EventCalendarResponseDTO {
         this.dateInit = event.getDateInit();
         this.dateEnd = event.getDateEnd();
         this.description = event.getDescription();
+        this.teamId = event.getTeamId();
         this.scouters = event.getScouters();
     }
 }

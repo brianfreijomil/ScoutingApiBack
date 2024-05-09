@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.sql.Time;
 
 @Data
 @NoArgsConstructor
@@ -45,6 +46,7 @@ public class PlayerRequestDTO {
     private ScouterRequestDTO scouter;
     @NotNull(message = "dateSeen cannot be null")
     private Date dateSeen;
+    private Time timeSeen;
     @NotNull(message = "divisionSeen cannot be null")
     @NotEmpty(message = "divisionSeen cannot be empty")
     private String divisionSeen;

@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.sql.Time;
 import java.util.List;
 
 @Data
@@ -29,6 +30,7 @@ public class PlayerResponseDTO {
     private String characteristics;
     private Scouter scouter;
     private Date dateSeen;
+    private Time timeSeen;
     private String divisionSeen;
     private String teamSeen;
     private String campSeen;

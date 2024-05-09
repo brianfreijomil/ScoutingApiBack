@@ -22,7 +22,7 @@ public class PlayerController {
     @Autowired
     private IPlayerService playerService;
 
-    @GetMapping("")
+    @GetMapping("/by-team")
     public ResponseEntity<List<PlayerSearchDTO>> getAllPlayersByTeamId(@NotNull @NotEmpty Long team_id ) {
         return this.playerService.getAllByTeamId(team_id);
     }

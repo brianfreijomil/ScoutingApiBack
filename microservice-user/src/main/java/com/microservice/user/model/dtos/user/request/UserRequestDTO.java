@@ -13,6 +13,8 @@ import java.util.Set;
 @AllArgsConstructor
 public class UserRequestDTO {
 
+    @NotNull(message = "ID cannot be null")
+    @NotEmpty(message = "ID cannot be empty")
     private Long id;
     @NotNull(message = "username cannot be null")
     @NotEmpty(message = "username cannot be empty")

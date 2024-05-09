@@ -15,7 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 public class EventCalendarRequestDTO {
 
-    //can be null
+    @NotNull(message = "ID cannot be null")
+    @NotEmpty(message = "ID cannot be empty")
     private Long id;
     @NotNull(message = "title cannot be null")
     @NotEmpty(message = "title cannot be empty")

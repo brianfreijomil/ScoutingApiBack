@@ -4,6 +4,7 @@ import com.microservice.user.model.dtos.team.request.TeamRequestDTO;
 import com.microservice.user.model.dtos.team.response.TeamResponseDTO;
 import com.microservice.user.services.interfaces.ITeamService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -47,9 +48,9 @@ public class TeamController {
         return this.teamService.update(team, id);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<?> updateTeamSubscriptionStatus(@NotNull Boolean subscriptionStatus, @PathVariable Long id) {
-        return this.teamService.updateTeamSubscriptionStatus(subscriptionStatus,id);
+    @GetMapping("/{id}/subscription")
+    public ResponseEntity<?> updateTeamSubscriptionStatus(@NotNull @NotEmpty Boolean sub, @PathVariable Long id) {
+        return this.teamService.updateTeamSubscriptionStatus(sub,id);
     }
 
     @DeleteMapping("/{id}")

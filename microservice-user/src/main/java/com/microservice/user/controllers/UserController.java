@@ -61,8 +61,8 @@ public class UserController {
 
     @GetMapping("/search")
     @PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE') or hasRole('ADMIN_SCOUTING_ROLE')")
-    public ResponseEntity<List<UserResponseDTO>> getAllUsersByTeamId(@NotNull Long teamId) {
-        return this.keycloakService.findAllUsersByTeamId(teamId);
+    public ResponseEntity<List<UserResponseDTO>> getAllUsersByTeamId(@NotNull Long team_id) {
+        return this.keycloakService.findAllUsersByTeamId(team_id);
     }
 
     /*

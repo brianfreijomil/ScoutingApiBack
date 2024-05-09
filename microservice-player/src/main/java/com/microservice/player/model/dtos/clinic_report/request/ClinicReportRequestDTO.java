@@ -13,7 +13,7 @@ import java.sql.Date;
 @AllArgsConstructor
 public class ClinicReportRequestDTO {
 
-    //id can be null
+    @NotNull(message = "ID cannot be null")
     private Long id;
 
     @NotNull(message = "title cannot be null")

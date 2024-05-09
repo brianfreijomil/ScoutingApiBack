@@ -12,7 +12,9 @@ import java.sql.Date;
 @NoArgsConstructor
 @Data
 public class StatRequestDTO {
-    //can be null
+
+
+    @NotNull(message = "ID cannot be null")
     private Long id;
 
     @NotNull(message = "dateRegister cannot be null")
