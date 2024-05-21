@@ -16,16 +16,16 @@ spring:
   security.oauth2:
     resourceserver:
       jwt:
-        jwk-set-uri: http://localhost:8181/realms/spring-microservices-realm/protocol/openid-connect/certs
+        jwk-set-uri: http://localhost:8181/realms/spring-auth/protocol/openid-connect/certs
     client:
       provider:
         keycloak:
-          issuer-uri: http://localhost:8181/realms/spring-microservices-realm
+          issuer-uri: http://localhost:8181/realms/spring-auth
       registration:
         spring-with-test-scope:
           provider: keycloak
-          client-id: scouting-client-id
-          client-secret: YC9sJGAhUE9vKOXb1Y1vKgtd1GnoljPj
+          client-id: scouting-client
+          client-secret: cNXlbOfQCFCgWYJcieiY6YTIuM1uAEeL
           authorization-grant-type: authorization_code
           scope: openid
   cloud:
@@ -68,20 +68,3 @@ spring:
           uri: http://localhost:8092
           predicates:
             - Path=/api/recruitment_stats/**
-      ##default-filters:
-        ##- SaveSession
-        ##- TokenRelay
-  ##security:
-    ##oauth2:
-      ##client:
-        ##provider:
-          ##keycloak:
-            ##issuerUri: http://localhost:8181/realms/microservices-realm
-      ##registration:
-        ##keycloak:
-          ##provider: keycloak
-          ##scope: openid
-          ##clientId: microservices_client
-          ##clientSecret: dAuywT9ejF1DbXWuUudKRXssQlhmbqKj
-          ##authorizationGrantType: authorization_code
-          ##redirectUri: {baseUrl}/login/oauth2/code/keycloak

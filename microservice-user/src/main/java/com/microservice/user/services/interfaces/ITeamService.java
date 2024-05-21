@@ -1,5 +1,6 @@
 package com.microservice.user.services.interfaces;
 
+import com.microservice.user.http.response.ResponseApi;
 import com.microservice.user.model.dtos.team.request.TeamRequestDTO;
 import com.microservice.user.model.dtos.team.response.TeamResponseDTO;
 import org.springframework.http.ResponseEntity;
@@ -8,17 +9,17 @@ import java.util.List;
 
 public interface ITeamService {
 
-    ResponseEntity<List<TeamResponseDTO>> getAll();
+    ResponseApi<List<TeamResponseDTO>> getAll();
 
-    ResponseEntity<TeamResponseDTO> getById(Long id);
+    ResponseApi<TeamResponseDTO> getById(Long id);
 
-    ResponseEntity<?> create(TeamRequestDTO team);
+    ResponseApi<?> create(TeamRequestDTO team);
 
-    ResponseEntity<?> update(TeamRequestDTO team, Long id);
+    ResponseApi<?> update(TeamRequestDTO team, Long id);
 
-    ResponseEntity<?> updateTeamSubscriptionStatus(Boolean subscriptionStatus, Long id);
+    ResponseApi<?> updateTeamSubscriptionStatus(Boolean subscriptionStatus, Long id);
 
-    ResponseEntity<?> delete(Long id);
+    ResponseApi<?> delete(Long id);
 
     //PlayersByTeamResponse getPlayersByTeamId(Long teamId);
 

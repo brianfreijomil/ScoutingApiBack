@@ -1,5 +1,6 @@
 package com.microservice.user.controllers;
 
+import com.microservice.user.http.response.ResponseApi;
 import com.microservice.user.model.dtos.user.SessionDTO;
 import com.microservice.user.model.dtos.user.request.LoginDTO;
 import com.microservice.user.model.dtos.user.request.UserRequestDTO;
@@ -9,6 +10,7 @@ import com.microservice.user.services.interfaces.IUserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,49 +21,51 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@Slf4j
 public class UserController {
 
     @Autowired
     private IKeycloakService keycloakService;
 
     @PostMapping("/log-in")
-    public ResponseEntity<SessionDTO> startSession(@RequestBody @Valid LoginDTO loginDTO) {
+    public ResponseApi<SessionDTO> startSession(@RequestBody @Valid LoginDTO loginDTO) {
         return this.keycloakService.startSession(loginDTO);
     }
 
     @GetMapping("")
     @PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE')")
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+    public ResponseApi<List<UserResponseDTO>> getAllUsers() {
         return this.keycloakService.findAllUsers();
     }
 
     @GetMapping("/{username}")
     @PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE') or hasRole('ADMIN_SCOUTING_ROLE')")
-    public ResponseEntity<UserResponseDTO> getUserByUsername(@PathVariable @NotNull @NotEmpty String username) {
+    public ResponseApi<UserResponseDTO> getUserByUsername(@PathVariable @NotNull @NotEmpty String username) {
         return this.keycloakService.searchUserByUsername(username);
     }
 
     @PostMapping("")
     @PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE') or hasRole('ADMIN_SCOUTING_ROLE')")
-    public ResponseEntity<?> createUser(@RequestBody @Valid UserRequestDTO user) {
+    public ResponseApi<?> createUser(@RequestBody @Valid UserRequestDTO user) {
         return this.keycloakService.createUser(user);
     }
 
     @PutMapping("/{userId}")
     @PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE') or hasRole('ADMIN_SCOUTING_ROLE')")
-    public ResponseEntity<?> updateUser(@RequestBody @Valid UserRequestDTO user, @PathVariable String userId) {
+    public ResponseApi<?> updateUser(@RequestBody @Valid UserRequestDTO user, @PathVariable String userId) {
         return this.keycloakService.updateUser(userId,user);
     }
 
     @DeleteMapping("/{userId}")
     @PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE') or hasRole('ADMIN_SCOUTING_ROLE')")
-    public ResponseEntity<?> deleteUser(@PathVariable String userId) {
+    public ResponseApi<?> deleteUser(@PathVariable String userId) {
         return this.keycloakService.deleteUser(userId);
     }
 
     @GetMapping("/search")
     @PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE') or hasRole('ADMIN_SCOUTING_ROLE')")
-    public ResponseEntity<List<UserResponseDTO>> getAllUsersByTeamId(@NotNull Long team_id) {
+    public ResponseApi<List<UserResponseDTO>> getAllUsersByTeamId(@NotNull Long team_id) {
+        log.info("team ID: " + team_id.toString());
         return this.keycloakService.findAllUsersByTeamId(team_id);
     }
 

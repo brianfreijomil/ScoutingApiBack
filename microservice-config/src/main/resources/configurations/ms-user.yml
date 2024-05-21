@@ -18,13 +18,9 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8181/realms/spring-microservices-realm/protocol/openid-connect/certs
+          jwk-set-uri: http://localhost:8181/realms/spring-auth/protocol/openid-connect/certs
   kafka:
     bootstrapServers: localhost:9092
-    #producer:
-     # retries: 1
-      #keySerializer: org.apache.kafka.common.serialization.StringSerializer
-      #valueSerializer: org.apache.kafka.common.serialization.StringSerializer
 
 eureka:
   instance:
@@ -36,5 +32,5 @@ eureka:
 jwt:
   auth:
     converter:
-      resource-id: scouting-client-id
+      resource-id: scouting-client
       principle-attribute: preferred_username

@@ -1,5 +1,6 @@
 package com.microservice.user.controllers;
 
+import com.microservice.user.http.response.ResponseApi;
 import com.microservice.user.model.dtos.team.request.TeamRequestDTO;
 import com.microservice.user.model.dtos.team.response.TeamResponseDTO;
 import com.microservice.user.services.interfaces.ITeamService;
@@ -22,12 +23,12 @@ public class TeamController {
     private ITeamService teamService;
 
     @GetMapping("")
-    public ResponseEntity<List<TeamResponseDTO>> getAllTeams() {
+    public ResponseApi<List<TeamResponseDTO>> getAllTeams() {
         return this.teamService.getAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TeamResponseDTO> getTeamById(@PathVariable Long id) {
+    public ResponseApi<TeamResponseDTO> getTeamById(@PathVariable Long id) {
         return this.teamService.getById(id);
     }
 
@@ -39,22 +40,22 @@ public class TeamController {
      */
 
     @PostMapping("")
-    public ResponseEntity<?> createTeam(@RequestBody @Valid TeamRequestDTO team) {
+    public ResponseApi<?> createTeam(@RequestBody @Valid TeamRequestDTO team) {
         return this.teamService.create(team);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTeam(@RequestBody @Valid TeamRequestDTO team, @PathVariable Long id) {
+    public ResponseApi<?> updateTeam(@RequestBody @Valid TeamRequestDTO team, @PathVariable Long id) {
         return this.teamService.update(team, id);
     }
 
     @GetMapping("/{id}/subscription")
-    public ResponseEntity<?> updateTeamSubscriptionStatus(@NotNull @NotEmpty Boolean sub, @PathVariable Long id) {
+    public ResponseApi<?> updateTeamSubscriptionStatus(@NotNull @NotEmpty Boolean sub, @PathVariable Long id) {
         return this.teamService.updateTeamSubscriptionStatus(sub,id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTeam(@PathVariable Long id) {
+    public ResponseApi<?> deleteTeam(@PathVariable Long id) {
         return this.teamService.delete(id);
     }
 

@@ -3,6 +3,7 @@ package com.microservice.user.services.implement;
 import com.microservice.user.exceptions.ConflictExistException;
 import com.microservice.user.exceptions.ConflictKeycloakException;
 import com.microservice.user.exceptions.NotFoundException;
+import com.microservice.user.http.response.ResponseApi;
 import com.microservice.user.model.dtos.user.ScouterDTO;
 import com.microservice.user.model.dtos.user.SessionDTO;
 import com.microservice.user.model.dtos.user.request.LoginDTO;
@@ -42,7 +43,7 @@ public class KeycloakService implements IKeycloakService {
 
 
     @Override
-    public ResponseEntity<SessionDTO> startSession(LoginDTO loginUser) {
+    public ResponseApi<SessionDTO> startSession(LoginDTO loginUser) {
         return null;
     }
 
@@ -53,8 +54,8 @@ public class KeycloakService implements IKeycloakService {
      */
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<List<UserResponseDTO>> findAllUsers() {
-        String attributeKey = "team-id";
+    public ResponseApi<List<UserResponseDTO>> findAllUsers() {
+        String attributeKey = "team_id";
         List<UserRepresentation> usersKeycloak = KeycloakProvider.getRealmResource().users().list();
         List<UserResponseDTO> usersDTO = new ArrayList<>();
         if(!usersKeycloak.isEmpty()) {
@@ -62,6 +63,7 @@ public class KeycloakService implements IKeycloakService {
                     new UserResponseDTO(
                             user.getId(),
                             user.getUsername(),
+                            user.getEmail(),
                             user.getLastName(),
                             user.getFirstName(),
                             user.isEnabled(),
@@ -69,7 +71,7 @@ public class KeycloakService implements IKeycloakService {
             ).collect(Collectors.toList());
         }
 
-        return new ResponseEntity<>(usersDTO, HttpStatus.OK);
+        return new ResponseApi<>(usersDTO, HttpStatus.OK, "OK");
     }
 
     /**
@@ -81,9 +83,9 @@ public class KeycloakService implements IKeycloakService {
      */
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<List<UserResponseDTO>> findAllUsersByTeamId(Long teamId) {
+    public ResponseApi<List<UserResponseDTO>> findAllUsersByTeamId(Long teamId) {
         if(this.teamRepository.existsById(teamId)) {
-            String attributeKey = "team-id";
+            String attributeKey = "team_id";
 
             List<UserRepresentation> usersKeycloak = KeycloakProvider.getRealmResource().users().list();
 
@@ -96,15 +98,16 @@ public class KeycloakService implements IKeycloakService {
                         UserResponseDTO dto = new UserResponseDTO();
                         dto.setId(user.getId());
                         dto.setUsername(user.getUsername());
-                        dto.setFirstname(user.getFirstName());
-                        dto.setLastname(user.getLastName());
-                        dto.setEnable(user.isEnabled());
+                        dto.setEmail(user.getEmail());
+                        dto.setFirstName(user.getFirstName());
+                        dto.setLastName(user.getLastName());
+                        dto.setEnabled(user.isEnabled());
                         dto.setTeamId(teamId.toString()); // Set the teamId from the filter criteria
                         return dto;
                     })
                     .collect(Collectors.toList());
-
-            return new ResponseEntity<>(userList, HttpStatus.OK);
+            log.info("userlist: " + userList.size());
+            return new ResponseApi<>(userList, HttpStatus.OK, "OK");
         }
         throw new NotFoundException("Team","ID",teamId.toString());
     }
@@ -119,7 +122,7 @@ public class KeycloakService implements IKeycloakService {
      */
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<UserResponseDTO> searchUserByUsername(String username) {
+    public ResponseApi<UserResponseDTO> searchUserByUsername(String username) {
 
         List<UserRepresentation> usersKeycloak = new ArrayList<>();
         try {
@@ -135,13 +138,14 @@ public class KeycloakService implements IKeycloakService {
                     new UserResponseDTO(
                             user.getId(),
                             user.getUsername(),
+                            user.getEmail(),
                             user.getLastName(),
                             user.getFirstName(),
                             user.isEnabled(),
-                            user.getAttributes().get("team-id").get(0))
+                            user.getAttributes().get("team_id").get(0))
             ).collect(Collectors.toList());
             //return user in first position, the only one
-            return new ResponseEntity<>(usersDTO.get(0), HttpStatus.OK);
+            return new ResponseApi<>(usersDTO.get(0), HttpStatus.OK,"OK");
         }
         throw new NotFoundException("User","username",username);
     }
@@ -155,8 +159,8 @@ public class KeycloakService implements IKeycloakService {
      */
     @Override
     @Transactional
-    public ResponseEntity<?> createUser(UserRequestDTO user) {
-        String attributeKey = "team-id";
+    public ResponseApi<?> createUser(UserRequestDTO user) {
+        String attributeKey = "team_id";
         int status = 0;
         UsersResource usersResource = KeycloakProvider.getUserResource();
 
@@ -167,8 +171,8 @@ public class KeycloakService implements IKeycloakService {
         attributes.put(attributeKey,values);
 
         UserRepresentation userRepresentation = new UserRepresentation();
-        userRepresentation.setFirstName(user.getName());
-        userRepresentation.setLastName(user.getSurname());
+        userRepresentation.setFirstName(user.getFirstName());
+        userRepresentation.setLastName(user.getLastName());
         userRepresentation.setEmail(user.getEmail());
         userRepresentation.setUsername(user.getUsername());
         userRepresentation.setEmailVerified(true);
@@ -222,7 +226,7 @@ public class KeycloakService implements IKeycloakService {
                         .realmLevel()
                         .add(roleRepresentations);
 
-                return new ResponseEntity<>(userId, HttpStatus.CREATED);
+                return new ResponseApi<>(userId, HttpStatus.CREATED,"OK");
             }
             catch (Exception ex) {
                 throw new ConflictKeycloakException(ex.getMessage());
@@ -244,7 +248,7 @@ public class KeycloakService implements IKeycloakService {
      */
     @Override
     @Transactional
-    public ResponseEntity<?> deleteUser(String userId) {
+    public ResponseApi<?> deleteUser(String userId) {
         try {
             UserRepresentation userRepresentation = KeycloakProvider.getUserResource().get(userId).toRepresentation();
             KeycloakProvider.getUserResource().get(userId).remove();
@@ -255,7 +259,7 @@ public class KeycloakService implements IKeycloakService {
             );
             //---------------------------------------------------------------------------------------------
 
-            return new ResponseEntity<>(true,HttpStatus.OK);
+            return new ResponseApi<>(true,HttpStatus.OK,"OK");
         }
         catch (Exception ex) {
             throw new ConflictKeycloakException(ex.getMessage());
@@ -272,7 +276,7 @@ public class KeycloakService implements IKeycloakService {
      */
     @Override
     @Transactional
-    public ResponseEntity<?> updateUser(String userId, UserRequestDTO user) {
+    public ResponseApi<?> updateUser(String userId, UserRequestDTO user) {
 
         //THE USERNAME CANNOT BE UPDATED!!!
 
@@ -284,8 +288,8 @@ public class KeycloakService implements IKeycloakService {
 
         //update user data
         UserRepresentation userRepresentation = new UserRepresentation();
-        userRepresentation.setFirstName(user.getName());
-        userRepresentation.setLastName(user.getSurname());
+        userRepresentation.setFirstName(user.getFirstName());
+        userRepresentation.setLastName(user.getLastName());
         userRepresentation.setEmail(user.getEmail());
         userRepresentation.setUsername(user.getUsername());
         userRepresentation.setEmailVerified(true);
@@ -304,7 +308,7 @@ public class KeycloakService implements IKeycloakService {
             );
             //---------------------------------------------------------------------------------------------
 
-            return new ResponseEntity<>(true,HttpStatus.ACCEPTED);
+            return new ResponseApi<>(true,HttpStatus.ACCEPTED,"OK");
         }
         catch (Exception ex) {
             throw new ConflictKeycloakException(ex.getMessage());

@@ -2,19 +2,16 @@ package com.microservice.user.model.dtos.team.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.Date;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class TeamRequestDTO {
 
     @NotNull(message = "id cannot be null")
-    @NotEmpty(message = "id cannot be empty")
     private Long id;
 
     @NotNull(message = "name cannot be null")

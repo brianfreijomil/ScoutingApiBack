@@ -18,7 +18,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8181/realms/spring-microservices-realm/protocol/openid-connect/certs
+          jwk-set-uri: http://localhost:8181/realms/spring-auth/protocol/openid-connect/certs
 
 eureka:
   instance:

@@ -14,7 +14,6 @@ import java.util.Set;
 public class UserRequestDTO {
 
     @NotNull(message = "ID cannot be null")
-    @NotEmpty(message = "ID cannot be empty")
     private Long id;
     @NotNull(message = "username cannot be null")
     @NotEmpty(message = "username cannot be empty")
@@ -24,14 +23,16 @@ public class UserRequestDTO {
     private String email;
     @NotNull(message = "surname cannot be null")
     @NotEmpty(message = "surname cannot be empty")
-    private String surname;
+    private String lastName;
     @NotNull(message = "name cannot be null")
     @NotEmpty(message = "name cannot be empty")
-    private String name;
+    private String firstName;
     @NotNull(message = "password cannot be null")
     @NotEmpty(message = "password cannot be empty")
     private String password;
     private Set<String> roles;
+    @NotNull(message = "enabled cannot be null")
+    private Boolean enabled;
     @NotNull(message = "teamId cannot be null")
     private Long teamId;
 

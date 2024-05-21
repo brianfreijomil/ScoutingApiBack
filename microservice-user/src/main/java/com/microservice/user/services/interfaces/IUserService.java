@@ -1,5 +1,6 @@
 package com.microservice.user.services.interfaces;
 
+import com.microservice.user.http.response.ResponseApi;
 import com.microservice.user.model.dtos.user.request.LoginDTO;
 import com.microservice.user.model.dtos.user.request.UserRequestDTO;
 import com.microservice.user.model.dtos.user.response.UserResponseDTO;
@@ -9,9 +10,9 @@ import java.util.List;
 
 public interface IUserService {
 
-    ResponseEntity<List<UserResponseDTO>> getAllByTeamId(Long teamId);
-    ResponseEntity<UserResponseDTO> getByCredentials(LoginDTO loginDTO);
-    ResponseEntity<?> updateStatus(Boolean status, Long id);
-    ResponseEntity<?> updateAllUsersSubscriptionStatus(Boolean status, Long teamId);
+    ResponseApi<List<UserResponseDTO>> getAllByTeamId(Long teamId);
+    ResponseApi<UserResponseDTO> getByCredentials(LoginDTO loginDTO);
+    ResponseApi<?> updateStatus(Boolean status, Long id);
+    ResponseApi<?> updateAllUsersSubscriptionStatus(Boolean status, Long teamId);
 
 }

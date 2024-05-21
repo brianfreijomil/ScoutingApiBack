@@ -13,16 +13,8 @@ import reactor.core.publisher.Mono;
 @RestController
 public class MicroserviceGatewayApplication {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(MicroserviceGatewayApplication.class);
-
 	public static void main(String[] args) {
 		SpringApplication.run(MicroserviceGatewayApplication.class, args);
-	}
-
-	@GetMapping(value = "/token")
-	public Mono<String> getHome(@RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authorizedClient) {
-		return Mono.just(authorizedClient.getAccessToken().getTokenValue());
 	}
 
 }

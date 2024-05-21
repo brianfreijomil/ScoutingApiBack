@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface TeamRepository extends JpaRepository<Team,Long> {
 
     @Query("select t from Team t where t.email =:email")
-    boolean existsByEmail(@Param("email") String email);
+    Team findByEmail(@Param("email") String email);
 }

@@ -18,14 +18,9 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8181/realms/spring-microservices-realm/protocol/openid-connect/certs
+          jwk-set-uri: http://localhost:8181/realms/spring-auth/protocol/openid-connect/certs
   kafka:
     bootstrapServers: localhost:9092
-    ##consumer:
-      #groupId: scouter-management
-      #keyDeserializer: org.apache.kafka.common.serialization.StringDeserializer
-      #valueDeserializer: org.apache.kafka.common.serialization.StringDeserializer
-
 
 eureka:
   instance:
