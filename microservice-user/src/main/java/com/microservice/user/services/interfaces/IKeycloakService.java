@@ -7,13 +7,14 @@ import com.microservice.user.model.dtos.user.request.UserRequestDTO;
 import com.microservice.user.model.dtos.user.response.UserResponseDTO;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public interface IKeycloakService {
 
     ResponseApi<SessionDTO> startSession(LoginDTO loginUser);
-    ResponseApi<List<UserResponseDTO>> findAllUsers();
+    ResponseApi<List<UserResponseDTO>> findAllUsers(String idCurrentUser);
     ResponseApi<List<UserResponseDTO>> findAllUsersByTeamId(Long teamId);
     ResponseApi<UserResponseDTO> searchUserByUsername(String username);
     ResponseApi<?> createUser(UserRequestDTO user);

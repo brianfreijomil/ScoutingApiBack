@@ -34,8 +34,8 @@ public class UserController {
 
     @GetMapping("")
     @PreAuthorize("hasRole('DEVELOPER_SCOUTING_ROLE')")
-    public ResponseApi<List<UserResponseDTO>> getAllUsers() {
-        return this.keycloakService.findAllUsers();
+    public ResponseApi<List<UserResponseDTO>> getAllUsers(@Valid @NotNull @NotEmpty String id_current_user) {
+        return this.keycloakService.findAllUsers(id_current_user);
     }
 
     @GetMapping("/{username}")

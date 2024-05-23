@@ -25,7 +25,6 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,12 +53,14 @@ public class KeycloakService implements IKeycloakService {
      */
     @Override
     @Transactional(readOnly = true)
-    public ResponseApi<List<UserResponseDTO>> findAllUsers() {
+    public ResponseApi<List<UserResponseDTO>> findAllUsers(String idCurrentUser) {
         String attributeKey = "team_id";
         List<UserRepresentation> usersKeycloak = KeycloakProvider.getRealmResource().users().list();
         List<UserResponseDTO> usersDTO = new ArrayList<>();
         if(!usersKeycloak.isEmpty()) {
-            usersDTO = usersKeycloak.stream().map(user ->
+            usersDTO = usersKeycloak.stream()
+                    .filter(user -> !user.getId().equals(idCurrentUser))
+                    .map(user ->
                     new UserResponseDTO(
                             user.getId(),
                             user.getUsername(),
