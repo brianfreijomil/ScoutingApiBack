@@ -68,7 +68,7 @@ public class KeycloakService implements IKeycloakService {
                             user.getLastName(),
                             user.getFirstName(),
                             user.isEnabled(),
-                            user.getAttributes().get(attributeKey).get(0))
+                            Long.valueOf(user.getAttributes().get(attributeKey).get(0)))
             ).collect(Collectors.toList());
         }
 
@@ -103,7 +103,7 @@ public class KeycloakService implements IKeycloakService {
                         dto.setFirstName(user.getFirstName());
                         dto.setLastName(user.getLastName());
                         dto.setEnabled(user.isEnabled());
-                        dto.setTeamId(teamId.toString()); // Set the teamId from the filter criteria
+                        dto.setTeamId(teamId); // Set the teamId from the filter criteria
                         return dto;
                     })
                     .collect(Collectors.toList());
@@ -143,7 +143,7 @@ public class KeycloakService implements IKeycloakService {
                             user.getLastName(),
                             user.getFirstName(),
                             user.isEnabled(),
-                            user.getAttributes().get("team_id").get(0))
+                            Long.valueOf(user.getAttributes().get("team_id").get(0)))
             ).collect(Collectors.toList());
             //return user in first position, the only one
             return new ResponseApi<>(usersDTO.get(0), HttpStatus.OK,"OK");

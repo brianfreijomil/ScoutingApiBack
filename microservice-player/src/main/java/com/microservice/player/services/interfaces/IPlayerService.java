@@ -1,5 +1,6 @@
 package com.microservice.player.services.interfaces;
 
+import com.microservice.player.http.response.ResponseApi;
 import com.microservice.player.model.dtos.player.request.PlayerMultimediaDTO;
 import com.microservice.player.model.dtos.player.request.PlayerRequestDTO;
 import com.microservice.player.model.dtos.player.response.PlayerResponseDTO;
@@ -11,17 +12,19 @@ import java.util.List;
 
 public interface IPlayerService {
 
-    ResponseEntity<List<PlayerSearchDTO>> getAllByTeamId(Long teamId);
+    ResponseApi<List<PlayerSearchDTO>> getAllByTeamId(Long teamId);
 
-    ResponseEntity<PlayerResponseDTO> getById(Long id);
+    ResponseApi<PlayerResponseDTO> getByFullName(String fullName);
 
-    ResponseEntity<?> create(PlayerRequestDTO player);
+    ResponseApi<PlayerResponseDTO> getById(Long id);
 
-    ResponseEntity<?> update(PlayerRequestDTO player, Long id);
+    ResponseApi<?> create(PlayerRequestDTO player);
 
-    ResponseEntity<?> updateMultimedia(PlayerMultimediaDTO multimedia, Long id);
+    ResponseApi<?> update(PlayerRequestDTO player, Long id);
 
-    ResponseEntity<?> delete(Long id);
+    ResponseApi<?> updateMultimedia(PlayerMultimediaDTO multimedia, Long id);
+
+    ResponseApi<?> delete(Long id);
 
     boolean createScouter(ScouterRequestDTO scouter);
 

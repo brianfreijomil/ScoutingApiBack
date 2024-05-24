@@ -1,5 +1,6 @@
 package com.microservice.calendar.services.implement;
 
+import com.microservice.calendar.http.ResponseApi;
 import com.microservice.calendar.model.dtos.events.request.EventCalendarRequestDTO;
 import com.microservice.calendar.model.dtos.events.response.EventCalendarResponseDTO;
 import com.microservice.calendar.model.dtos.scouter.request.ScouterRequestDTO;
@@ -34,28 +35,28 @@ public class CalendarService implements ICalendarService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<List<EventCalendarResponseDTO>> getAllbyTeamId(Long teamId) {
+    public ResponseApi<List<EventCalendarResponseDTO>> getAllbyTeamId(Long teamId) {
         List<EventCalendarResponseDTO> eventsList = this.eventCalendarRepository.findAllByTeamId(teamId)
                 .stream()
                 .map(event -> new EventCalendarResponseDTO(event))
                 .collect(Collectors.toList());
 
-        return new ResponseEntity<>(eventsList, HttpStatus.OK);
+        return new ResponseApi<>(eventsList, HttpStatus.OK,"OK");
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<EventCalendarResponseDTO> getById(Long eventId) {
+    public ResponseApi<EventCalendarResponseDTO> getById(Long eventId) {
         Optional<EventCalendar> event = this.eventCalendarRepository.findById(eventId);
         if(!event.isEmpty()) {
-            return new ResponseEntity<>(new EventCalendarResponseDTO(event.get()), HttpStatus.OK);
+            return new ResponseApi<>(new EventCalendarResponseDTO(event.get()), HttpStatus.OK,"OK");
         }
         throw new NotFoundException("EventCalendar","ID",eventId.toString());
     }
 
     @Override
     @Transactional
-    public ResponseEntity<?> createEvent(EventCalendarRequestDTO event) {
+    public ResponseApi<?> createEvent(EventCalendarRequestDTO event) {
         try {
             EventCalendar newEventCalendar = new EventCalendar(event);
 
@@ -67,7 +68,7 @@ public class CalendarService implements ICalendarService {
                     newEventCalendar.addScouterToEvent(scouter.get());
             }
             this.eventCalendarRepository.save(newEventCalendar);
-            return new ResponseEntity<>(true,HttpStatus.CREATED);
+            return new ResponseApi<>(true,HttpStatus.CREATED,"OK");
         }
         catch (Exception ex) {
             throw new ConflictPersistException("create","EventCalendar","title", event.getTitle(), ex.getMessage());
@@ -76,7 +77,7 @@ public class CalendarService implements ICalendarService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> updateEvent(EventCalendarRequestDTO event, Long eventId) {
+    public ResponseApi<?> updateEvent(EventCalendarRequestDTO event, Long eventId) {
         Optional<EventCalendar> eventExisting = this.eventCalendarRepository.findById(eventId);
         if(!eventExisting.isEmpty()) {
             try {
@@ -96,7 +97,7 @@ public class CalendarService implements ICalendarService {
                 eventExisting.get().setDateEnd(event.getDateEnd());
                 eventExisting.get().setDescription(event.getDescription());
                 //the id cannot be edited
-                return new ResponseEntity<>(true,HttpStatus.ACCEPTED);
+                return new ResponseApi<>(true,HttpStatus.ACCEPTED,"OK");
             }
             catch (Exception ex) {
                 throw new ConflictPersistException("update","EventCalendar","ID",eventId.toString(), ex.getMessage());
@@ -107,13 +108,13 @@ public class CalendarService implements ICalendarService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> deleteEvent(Long eventId) {
+    public ResponseApi<?> deleteEvent(Long eventId) {
         Optional<EventCalendar> eventExisting = this.eventCalendarRepository.findById(eventId);
         if(!eventExisting.isEmpty()) {
             try {
                 //los scouters asociados no deben ser eliminados
                 this.eventCalendarRepository.delete(eventExisting.get());
-                return new ResponseEntity<>(true,HttpStatus.OK);
+                return new ResponseApi<>(true,HttpStatus.OK,"OK");
             }
             catch (Exception ex) {
                 throw new ConflictPersistException("update","EventCalendar","ID",eventId.toString(), ex.getMessage());

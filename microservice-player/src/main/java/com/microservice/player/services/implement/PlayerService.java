@@ -1,5 +1,6 @@
 package com.microservice.player.services.implement;
 
+import com.microservice.player.http.response.ResponseApi;
 import com.microservice.player.model.dtos.clinic_report.response.ClinicReportResponseDTO;
 import com.microservice.player.model.dtos.player.request.PlayerMultimediaDTO;
 import com.microservice.player.model.dtos.player.request.PlayerRequestDTO;
@@ -42,7 +43,7 @@ public class PlayerService implements IPlayerService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<List<PlayerSearchDTO>> getAllByTeamId(Long teamId) {
+    public ResponseApi<List<PlayerSearchDTO>> getAllByTeamId(Long teamId) {
         List<PlayerSearchDTO> playerList = this.playerRepository.findAllByTeamId(teamId)
                 .stream()
                 .map(player -> new PlayerSearchDTO(
@@ -54,12 +55,48 @@ public class PlayerService implements IPlayerService {
                         player.getScouter()
                 )).collect(Collectors.toList());
 
-        return new ResponseEntity<>(playerList, HttpStatus.OK);
+        return new ResponseApi<>(playerList, HttpStatus.OK,"OK");
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<PlayerResponseDTO> getById(Long dni) {
+    public ResponseApi<PlayerResponseDTO> getByFullName(String fullName) {
+
+        //check if the full name format is correct
+        String[] parts = fullName.split("_");
+        if (parts.length != 2) {
+            return new ResponseApi<>(null,HttpStatus.BAD_REQUEST,"error, Invalid format");
+        }
+
+        String name = parts[0];
+        String surname = parts[1];
+
+        //get player
+        Player player = this.playerRepository.findByNameAndSurname(name,surname);
+        if(player != null) {
+            //get stats player
+            List<StatResponseDTO> statsDTO = this.statRepository.findAllByPlayerId(player.getDni())
+                    .stream()
+                    .map(stat -> new StatResponseDTO(stat))
+                    .collect(Collectors.toList());
+            //get clinic history player
+            List<ClinicReportResponseDTO> clinicHistoryDTO = this.clinicReportRepository.findAllByPlayerId(player.getDni())
+                    .stream()
+                    .map(clinicReport -> new ClinicReportResponseDTO(clinicReport))
+                    .collect(Collectors.toList());
+
+            return new ResponseApi<>(
+                    new PlayerResponseDTO(player,statsDTO,clinicHistoryDTO),
+                    HttpStatus.OK,
+                    "OK"
+            );
+        }
+        throw new NotFoundException("Player","ID",player.getDni().toString());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseApi<PlayerResponseDTO> getById(Long dni) {
         //get player
         Player player = this.playerRepository.findByDni(dni);
         if(player != null) {
@@ -74,9 +111,10 @@ public class PlayerService implements IPlayerService {
                     .map(clinicReport -> new ClinicReportResponseDTO(clinicReport))
                     .collect(Collectors.toList());
 
-            return new ResponseEntity<>(
+            return new ResponseApi<>(
                     new PlayerResponseDTO(player,statsDTO,clinicHistoryDTO),
-                    HttpStatus.OK
+                    HttpStatus.OK,
+                    "OK"
             );
         }
         throw new NotFoundException("Player","ID",dni.toString());
@@ -84,14 +122,14 @@ public class PlayerService implements IPlayerService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> create(PlayerRequestDTO player) {
+    public ResponseApi<?> create(PlayerRequestDTO player) {
         if (this.playerRepository.findByDni(player.getDni()) == null) {
             Optional<Scouter> scouter = this.scouterRepository.findById(player.getScouter().getId());
             if(!scouter.isEmpty()) {
                 try {
                     Player newPlayer = new Player(player,scouter.get());
                     this.playerRepository.save(newPlayer);
-                    return new ResponseEntity<>(true,HttpStatus.CREATED);
+                    return new ResponseApi<>(true,HttpStatus.CREATED,"OK");
                 }
                 catch (Exception ex) {
                     throw new ConflictPersistException("save","Player","ID",player.getDni().toString(),ex.getMessage());
@@ -104,7 +142,7 @@ public class PlayerService implements IPlayerService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> update(PlayerRequestDTO player, Long id) {
+    public ResponseApi<?> update(PlayerRequestDTO player, Long id) {
         Player playerExisting = this.playerRepository.findByDni(id);
         if(playerExisting != null) {
             try {
@@ -130,7 +168,7 @@ public class PlayerService implements IPlayerService {
                 //scouter and teamId are not included
 
                 this.playerRepository.save(playerExisting);
-                return new ResponseEntity<>(true, HttpStatus.ACCEPTED);
+                return new ResponseApi<>(true, HttpStatus.ACCEPTED,"OK");
             }
             catch (Exception ex) {
                 throw new ConflictPersistException("update","Player","ID",id.toString(),ex.getMessage());
@@ -141,7 +179,7 @@ public class PlayerService implements IPlayerService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> updateMultimedia(PlayerMultimediaDTO requestDTO, Long id) {
+    public ResponseApi<?> updateMultimedia(PlayerMultimediaDTO requestDTO, Long id) {
         Player playerExisting = this.playerRepository.findByDni(id);
         if(playerExisting != null) {
             try {
@@ -154,7 +192,7 @@ public class PlayerService implements IPlayerService {
                     playerExisting.setVideoLinks(requestDTO.getVideoLinks());
                 }
                 this.playerRepository.save(playerExisting);
-                return new ResponseEntity<>(true,HttpStatus.ACCEPTED);
+                return new ResponseApi<>(true,HttpStatus.ACCEPTED,"OK");
             }
             catch (Exception ex) {
                 throw new ConflictPersistException("updateMultimedia","Player","ID",id.toString(),ex.getMessage());
@@ -165,12 +203,12 @@ public class PlayerService implements IPlayerService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> delete(Long id) {
+    public ResponseApi<?> delete(Long id) {
         Player player = this.playerRepository.findByDni(id);
         if(player != null) {
             try {
                 this.playerRepository.delete(player);
-                return new ResponseEntity<>(true, HttpStatus.OK);
+                return new ResponseApi<>(true, HttpStatus.OK,"OK");
             }
             catch (Exception ex) {
                 throw new ConflictPersistException("delete","Player","ID",id.toString(),ex.getMessage());

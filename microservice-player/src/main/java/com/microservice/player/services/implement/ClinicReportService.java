@@ -1,5 +1,6 @@
 package com.microservice.player.services.implement;
 
+import com.microservice.player.http.response.ResponseApi;
 import com.microservice.player.model.dtos.clinic_report.request.ClinicReportRequestDTO;
 import com.microservice.player.model.entities.ClinicReport;
 import com.microservice.player.model.entities.Player;
@@ -26,12 +27,12 @@ public class ClinicReportService implements IClinicReportService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> create(ClinicReportRequestDTO clinicReport) {
+    public ResponseApi<?> create(ClinicReportRequestDTO clinicReport) {
         Player player = this.playerRepository.findByDni(clinicReport.getPlayerId());
         if(player != null) {
             try {
                 this.clinicReportRepository.save(new ClinicReport(clinicReport,player));
-                return new ResponseEntity<>(true,HttpStatus.CREATED);
+                return new ResponseApi<>(true,HttpStatus.CREATED,"OK");
             }
             catch (Exception ex) {
                 throw new ConflictPersistException(
@@ -47,7 +48,7 @@ public class ClinicReportService implements IClinicReportService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> update(ClinicReportRequestDTO clinicReport, Long id) {
+    public ResponseApi<?> update(ClinicReportRequestDTO clinicReport, Long id) {
         Optional<ClinicReport> clinicReportExisting = this.clinicReportRepository.findById(id);
         if(!clinicReportExisting.isEmpty()) {
             try {
@@ -56,7 +57,7 @@ public class ClinicReportService implements IClinicReportService {
                 clinicReportExisting.get().setReport(clinicReport.getReport());
                 //player id cannot be edited
                 this.clinicReportRepository.save(clinicReportExisting.get());
-                return new ResponseEntity<>(true, HttpStatus.ACCEPTED);
+                return new ResponseApi<>(true, HttpStatus.ACCEPTED,"OK");
             }
             catch (Exception ex) {
                 throw new ConflictPersistException("delete","ClinicReport","ID",id.toString(), ex.getMessage());
@@ -67,12 +68,12 @@ public class ClinicReportService implements IClinicReportService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> delete(Long id) {
+    public ResponseApi<?> delete(Long id) {
         Optional<ClinicReport> clinicReportExisting = this.clinicReportRepository.findById(id);
         if(!clinicReportExisting.isEmpty()) {
             try {
                 this.clinicReportRepository.delete(clinicReportExisting.get());
-                return new ResponseEntity<>(true, HttpStatus.OK);
+                return new ResponseApi<>(true, HttpStatus.OK,"OK");
             }
             catch (Exception ex) {
                 throw new ConflictPersistException("delete","ClinicReport","ID",id.toString(), ex.getMessage());

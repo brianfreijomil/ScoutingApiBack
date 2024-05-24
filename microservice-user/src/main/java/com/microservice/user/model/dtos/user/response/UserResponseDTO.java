@@ -16,6 +16,6 @@ public class UserResponseDTO {
     private String firstName;
     //private List<String> roles;
     private Boolean enabled;
-    private String teamId;
+    private Long teamId;
 
 }

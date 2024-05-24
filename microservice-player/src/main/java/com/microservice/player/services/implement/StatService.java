@@ -1,5 +1,6 @@
 package com.microservice.player.services.implement;
 
+import com.microservice.player.http.response.ResponseApi;
 import com.microservice.player.model.dtos.stat.request.StatRequestDTO;
 import com.microservice.player.model.entities.Player;
 import com.microservice.player.model.entities.Stat;
@@ -26,12 +27,12 @@ public class StatService implements IStatService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> create(StatRequestDTO stat) {
+    public ResponseApi<?> create(StatRequestDTO stat) {
         Player player = this.playerRepository.findByDni(stat.getPlayerId());
         if(player != null) {
             try {
                 this.statRepository.save(new Stat(stat,player));
-                return new ResponseEntity<>(true, HttpStatus.CREATED);
+                return new ResponseApi<>(true, HttpStatus.CREATED,"OK");
             }
             catch (Exception ex) {
                 throw new ConflictPersistException(
@@ -47,7 +48,7 @@ public class StatService implements IStatService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> update(StatRequestDTO stat, Long id) {
+    public ResponseApi<?> update(StatRequestDTO stat, Long id) {
         Optional<Stat> statExisting = this.statRepository.findById(id);
         if(!statExisting.isEmpty()) {
             try {
@@ -60,7 +61,7 @@ public class StatService implements IStatService {
                 statExisting.get().setRedCards(stat.getRedCards());
                 //player id cannot be edited
                 this.statRepository.save(statExisting.get());
-                return new ResponseEntity<>(true, HttpStatus.ACCEPTED);
+                return new ResponseApi<>(true, HttpStatus.ACCEPTED,"OK");
             }
             catch (Exception ex) {
                 throw new ConflictPersistException("update","Stat","ID",id.toString(),ex.getMessage());
@@ -71,12 +72,12 @@ public class StatService implements IStatService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> delete(Long id) {
+    public ResponseApi<?> delete(Long id) {
         Optional<Stat> statExisting = this.statRepository.findById(id);
         if(!statExisting.isEmpty()) {
             try {
                 this.statRepository.delete(statExisting.get());
-                return new ResponseEntity<>(true,HttpStatus.OK);
+                return new ResponseApi<>(true,HttpStatus.OK,"OK");
             }
             catch (Exception ex) {
                 throw new ConflictPersistException("delete","Stat","ID",id.toString(),ex.getMessage());

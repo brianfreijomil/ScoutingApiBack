@@ -1,5 +1,6 @@
 package com.microservice.player.controllers;
 
+import com.microservice.player.http.response.ResponseApi;
 import com.microservice.player.model.dtos.clinic_report.request.ClinicReportRequestDTO;
 import com.microservice.player.services.interfaces.IClinicReportService;
 import jakarta.validation.Valid;
@@ -15,17 +16,17 @@ public class ClinicReportController {
     private IClinicReportService clinicReportService;
 
     @PostMapping("")
-    public ResponseEntity<?> createClinicReport(@RequestBody @Valid ClinicReportRequestDTO clinicReport) {
+    public ResponseApi<?> createClinicReport(@RequestBody @Valid ClinicReportRequestDTO clinicReport) {
         return this.clinicReportService.create(clinicReport);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateClinicReport(@RequestBody @Valid ClinicReportRequestDTO clinicReport, @PathVariable Long id) {
+    public ResponseApi<?> updateClinicReport(@RequestBody @Valid ClinicReportRequestDTO clinicReport, @PathVariable Long id) {
         return this.clinicReportService.update(clinicReport,id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteClinicReport(@PathVariable Long id) {
+    public ResponseApi<?> deleteClinicReport(@PathVariable Long id) {
         return this.clinicReportService.delete(id);
     }
 

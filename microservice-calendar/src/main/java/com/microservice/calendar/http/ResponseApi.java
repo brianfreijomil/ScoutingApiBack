@@ -1,4 +1,4 @@
-package com.microservice.player.http.response;
+package com.microservice.calendar.http;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

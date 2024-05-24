@@ -1,5 +1,6 @@
 package com.microservice.calendar.controllers;
 
+import com.microservice.calendar.http.ResponseApi;
 import com.microservice.calendar.model.dtos.events.request.EventCalendarRequestDTO;
 import com.microservice.calendar.model.dtos.events.response.EventCalendarResponseDTO;
 import com.microservice.calendar.services.interfaces.ICalendarService;
@@ -20,27 +21,27 @@ public class CalendarController {
     /* ----- Events Context ----- */
 
     @GetMapping("/events/{teamid}")
-    public ResponseEntity<List<EventCalendarResponseDTO>> getAllEvents(@PathVariable Long teamId) {
+    public ResponseApi<List<EventCalendarResponseDTO>> getAllEvents(@PathVariable Long teamId) {
         return this.calendarService.getAllbyTeamId(teamId);
     }
 
     @GetMapping("/events/{eventId}")
-    public ResponseEntity<EventCalendarResponseDTO> getEventById(@PathVariable Long eventId) {
+    public ResponseApi<EventCalendarResponseDTO> getEventById(@PathVariable Long eventId) {
         return this.calendarService.getById(eventId);
     }
 
     @PostMapping("/events")
-    public ResponseEntity<?> createEvent(@RequestBody @Valid EventCalendarRequestDTO requestDTO) {
+    public ResponseApi<?> createEvent(@RequestBody @Valid EventCalendarRequestDTO requestDTO) {
         return this.calendarService.createEvent(requestDTO);
     }
 
     @PutMapping("/events/{eventId}")
-    public ResponseEntity<?> updateEvent(@RequestBody @Valid EventCalendarRequestDTO requestDTO, @PathVariable Long eventId) {
+    public ResponseApi<?> updateEvent(@RequestBody @Valid EventCalendarRequestDTO requestDTO, @PathVariable Long eventId) {
         return this.calendarService.updateEvent(requestDTO,eventId);
     }
 
     @DeleteMapping("/events/{eventId}")
-    public ResponseEntity<?> deleteEvent(@PathVariable Long eventId) {
+    public ResponseApi<?> deleteEvent(@PathVariable Long eventId) {
         return this.calendarService.deleteEvent(eventId);
     }
 
