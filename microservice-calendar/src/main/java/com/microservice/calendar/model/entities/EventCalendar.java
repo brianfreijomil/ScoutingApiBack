@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -22,9 +23,9 @@ public class EventCalendar {
     @Column(nullable = false)
     private String title;
     @Column
-    private Timestamp dateInit;
+    private Date dateInit;
     @Column
-    private Timestamp dateEnd;
+    private Date dateEnd;
     @Column(nullable = false)
     private String description;
     @Column

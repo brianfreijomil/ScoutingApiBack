@@ -5,6 +5,8 @@ import com.microservice.calendar.model.dtos.events.request.EventCalendarRequestD
 import com.microservice.calendar.model.dtos.events.response.EventCalendarResponseDTO;
 import com.microservice.calendar.services.interfaces.ICalendarService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +22,9 @@ public class CalendarController {
 
     /* ----- Events Context ----- */
 
-    @GetMapping("/events/{teamid}")
-    public ResponseApi<List<EventCalendarResponseDTO>> getAllEvents(@PathVariable Long teamId) {
-        return this.calendarService.getAllbyTeamId(teamId);
+    @GetMapping("/events/all-by")
+    public ResponseApi<List<EventCalendarResponseDTO>> getAllEvents(@Valid @NotNull @NotEmpty Long team_id) {
+        return this.calendarService.getAllbyTeamId(team_id);
     }
 
     @GetMapping("/events/{eventId}")

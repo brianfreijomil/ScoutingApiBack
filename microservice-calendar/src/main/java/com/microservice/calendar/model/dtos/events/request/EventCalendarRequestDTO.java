@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -22,9 +23,9 @@ public class EventCalendarRequestDTO {
     @NotEmpty(message = "title cannot be empty")
     private String title;
     @NotNull(message = "dateInit cannot be null")
-    private Timestamp dateInit;
+    private Date dateInit;
     @NotNull(message = "dateEnd cannot be null")
-    private Timestamp dateEnd;
+    private Date dateEnd;
     @NotNull(message = "description cannot be null")
     @NotEmpty(message = "description cannot be empty")
     private String description;

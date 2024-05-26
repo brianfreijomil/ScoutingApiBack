@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -16,8 +16,8 @@ public class EventCalendarResponseDTO {
 
     private Long id;
     private String title;
-    private Timestamp dateInit;
-    private Timestamp dateEnd;
+    private Date dateInit;
+    private Date dateEnd;
     private String description;
     private Long teamId;
     private List<Scouter> scouters;
